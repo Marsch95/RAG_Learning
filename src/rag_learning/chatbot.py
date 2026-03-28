@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .citations import Citation, build_citations
 from .config import Settings
 from .corpus import chunk_documents, load_project_documents
-from .metadata import SearchFilters
+from .filters import SearchFilters
 from .ollama_client import OllamaClient
 from .retrieval import IndexedChunk, load_index, rank_chunks, save_index
 
@@ -12,7 +13,7 @@ from .retrieval import IndexedChunk, load_index, rank_chunks, save_index
 @dataclass(slots=True)
 class AnswerResult:
     answer: str
-    citations: list[str]
+    citations: list[Citation]
 
 
 class RAGChatbot:
@@ -61,17 +62,16 @@ class RAGChatbot:
         context = self._build_context(ranked)
         prompt = self._build_prompt(question, context, filters)
         answer = self.ollama.chat(self.settings.chat_model, prompt)
-        citations = [self._citation_text(chunk) for _, chunk in ranked]
+        citations = build_citations(ranked)
         return AnswerResult(answer=answer, citations=citations)
 
     def _build_context(self, ranked: list[tuple[float, IndexedChunk]]) -> str:
         sections: list[str] = []
-        for score, chunk in ranked:
+        for citation, (_, chunk) in zip(build_citations(ranked), ranked):
             sections.append(
                 "\n".join(
                     [
-                        f"Citation: {self._citation_text(chunk)}",
-                        f"Similarity: {score:.3f}",
+                        f"Citation: {citation.prompt_label()}",
                         f"Text: {chunk.text}",
                     ]
                 )
@@ -93,21 +93,3 @@ class RAGChatbot:
             f"Question: {question}\n\n"
             f"Context:\n{context}"
         )
-
-    def _citation_text(self, chunk: IndexedChunk) -> str:
-        details = [
-            chunk.source_path,
-            f"source_type={chunk.source_type}",
-            f"module={chunk.module}",
-        ]
-        if chunk.ticket_id:
-            details.append(f"ticket_id={chunk.ticket_id}")
-        if chunk.change_id:
-            details.append(f"change_id={chunk.change_id}")
-        if chunk.updated_at:
-            details.append(f"updated_at={chunk.updated_at}")
-        if chunk.symbol:
-            details.append(f"symbol={chunk.symbol}")
-        if chunk.language:
-            details.append(f"language={chunk.language}")
-        return f"{chunk.chunk_id} ({', '.join(details)})"

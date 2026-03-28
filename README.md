@@ -22,7 +22,7 @@ The project is intentionally small and local.
 
 ## Current State
 
-Phase 3 is now implemented.
+Phase 4 is now implemented.
 
 That means the chatbot can retrieve from:
 
@@ -36,6 +36,16 @@ It also supports simple metadata-aware retrieval with filters for:
 - `source_type`
 - `module`
 - `ticket_id`
+- `change_id`
+- `symbol`
+- `language`
+- `updated_after`
+
+Phase 4 also improves evidence presentation.
+
+- citations are grouped by source type
+- each evidence line shows similarity and important metadata
+- mixed-source answers are easier to inspect
 
 This is enough to ask more realistic internal questions such as:
 
@@ -63,10 +73,12 @@ RAG_Learning/
 ├── src/
 │   └── rag_learning/
 │       ├── chatbot.py
+│       ├── citations.py
 │       ├── cli.py
 │       ├── code_loader.py
 │       ├── config.py
 │       ├── corpus.py
+│       ├── filters.py
 │       ├── metadata.py
 │       ├── ollama_client.py
 │       └── retrieval.py
@@ -119,7 +131,7 @@ $env:OLLAMA_CHAT_MODEL = "gemma3:latest"
 $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 ```
 
-## Run Phase 3
+## Run Phase 4
 
 ### 1. Build the local index
 
@@ -146,13 +158,19 @@ python -m rag_learning.cli ask "Where is authentication handled?"
 python -m rag_learning.cli ask "Which function performs the retry loop?" --source-type code
 ```
 
-### 3. Ask filtered questions
+### 3. Ask more precise filtered questions
 
 Filter by source type:
 
 ```powershell
 python -m rag_learning.cli ask "Why was retry logic added?" --source-type ticket
 python -m rag_learning.cli ask "Which code module sends receipts?" --source-type code
+```
+
+Filter across multiple source types:
+
+```powershell
+python -m rag_learning.cli ask "Which ticket or change note introduced retry logic?" --source-type ticket --source-type change
 ```
 
 Filter by module:
@@ -171,11 +189,22 @@ You can combine filters:
 
 ```powershell
 python -m rag_learning.cli ask "What do the docs say about this ticket?" --source-type doc --ticket-id TKT-204
+python -m rag_learning.cli ask "Which retry helper symbol is relevant here?" --source-type code --module payments --symbol retry
+python -m rag_learning.cli ask "What changed after the retry ticket landed?" --updated-after 2026-03-10
+python -m rag_learning.cli ask "Show me Python evidence for notification routing" --source-type code --language python --module notifications
 ```
 
-## How Phase 3 Works
+### 4. Inspect grouped evidence
 
-The Phase 1 and Phase 2 loops are still visible, but the input corpus is now rich enough to mix explanations and implementation details.
+Phase 4 changes the terminal output.
+
+Instead of one flat citation list, the CLI now groups evidence by source type and shows a cleaner line for each retrieved chunk.
+
+That makes it easier to see whether the answer relied on docs, tickets, change notes, code, or a mixture.
+
+## How Phase 4 Works
+
+The Phase 1, Phase 2, and Phase 3 pieces are still visible, but Phase 4 adds a cleaner search layer on top of them.
 
 ### Step 1: Load multiple source folders
 
@@ -222,17 +251,32 @@ That means retrieval can match both broad code questions and specific symbol que
 
 If you pass CLI filters, the retriever narrows the candidate chunks before similarity ranking.
 
-This is the first step toward more precise internal search.
+Phase 4 makes those filters more expressive.
 
-### Step 6: Return richer citations
+You can now narrow retrieval with:
 
-Each citation now shows not only the file path, but also the important metadata attached to that chunk.
+- one or more source types
+- one module
+- one ticket ID
+- one change ID
+- symbol text for code searches
+- language such as `python`
+- an `updated_after` date
 
-For code chunks, citations can also show the retrieved symbol name and language.
+This makes the assistant less noisy as the local corpus grows.
 
-That makes it easier to inspect whether retrieval found the right kind of evidence.
+### Step 6: Return grouped evidence with clearer citations
 
-## Why Phase 3 Matters
+Each evidence line now shows:
+
+- the document title
+- the source path
+- the similarity score
+- important metadata such as module, ticket ID, change ID, symbol, and language
+
+The CLI also groups those lines by source type so mixed-source retrieval is easier to inspect.
+
+## Why Phase 4 Matters
 
 Plain docs answer “what” questions reasonably well.
 
@@ -240,7 +284,7 @@ Tickets and change notes help answer “why” and “which change introduced th
 
 Code retrieval answers “where is this implemented?” questions.
 
-That makes the learning project feel much closer to a real internal engineering assistant without introducing a real production codebase.
+Phase 4 makes those answers easier to trust because you can narrow retrieval and inspect the supporting evidence more quickly.
 
 ## Current Limitations
 
@@ -255,17 +299,19 @@ Those limitations are addressed in [docs/phased-roadmap.md](docs/phased-roadmap.
 
 ## Beginner Study Order
 
-If you want to understand Phase 3 in a sensible order:
+If you want to understand Phase 4 in a sensible order:
 
 1. Read [docs/phased-roadmap.md](docs/phased-roadmap.md)
 2. Read [docs/technical-walkthrough.md](docs/technical-walkthrough.md)
 3. Read [src/rag_learning/code_loader.py](src/rag_learning/code_loader.py)
 4. Read [src/rag_learning/metadata.py](src/rag_learning/metadata.py)
 5. Read [src/rag_learning/corpus.py](src/rag_learning/corpus.py)
-6. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
-7. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
-8. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
-9. Run `index`
-10. Run `ask` with and without `--source-type code`
+6. Read [src/rag_learning/filters.py](src/rag_learning/filters.py)
+7. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
+8. Read [src/rag_learning/citations.py](src/rag_learning/citations.py)
+9. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
+10. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
+11. Run `index`
+12. Run `ask` with and without filters such as `--source-type code --symbol retry`
 
 For a line-by-line explanation of the code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).

@@ -152,7 +152,7 @@ Help the chatbot retrieve the right evidence more precisely.
 
 This phase adds:
 
-- more expressive query-time filters
+- more expressive query-time filters such as multiple source types, change IDs, symbols, languages, and update dates
 - stronger citation formatting and grouping
 - cleaner evidence presentation for mixed sources
 
@@ -245,4 +245,4 @@ This phase keeps the project grounded: learn the small version first, then grow 
 
 ### Next Phase Preview
 
-The next real implementation step after Phase 2 is Phase 3: add a small synthetic codebase for source code retrieval.
+The next real implementation step after Phase 4 is Phase 5: add a small evaluation loop.

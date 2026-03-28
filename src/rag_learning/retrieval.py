@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .config import INDEX_FILE, ensure_index_dir
 from .corpus import Chunk
-from .metadata import SearchFilters, matches_filters
+from .filters import SearchFilters, matches_filters
 
 
 @dataclass(slots=True)

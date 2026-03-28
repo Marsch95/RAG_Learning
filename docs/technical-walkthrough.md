@@ -129,6 +129,30 @@ Its job is to:
 
 This is the retrieval side of the project.
 
+### [src/rag_learning/filters.py](../src/rag_learning/filters.py)
+
+This file was added in Phase 4.
+
+Its job is to:
+
+- define the query-time filter object
+- normalize CLI input into predictable filter values
+- decide whether a chunk matches the active filters
+
+This keeps filtering logic separate from document metadata parsing.
+
+### [src/rag_learning/citations.py](../src/rag_learning/citations.py)
+
+This file was added in Phase 4.
+
+Its job is to:
+
+- convert ranked chunks into structured citation objects
+- format those citations for prompts and terminal display
+- group evidence by source type
+
+This makes the evidence output easier for beginners to inspect.
+
 ### [src/rag_learning/ollama_client.py](../src/rag_learning/ollama_client.py)
 
 This file talks to Ollama over HTTP.
@@ -154,6 +178,8 @@ Its job is to:
 ## Core Data Structures
 
 Before looking at the functions, it helps to know the three main data shapes used by the code.
+
+Phase 4 adds two more small data shapes that are worth knowing.
 
 ### `Document`
 
@@ -198,6 +224,73 @@ Fields:
 Purpose:
 
 - represent a chunk that is ready for vector search
+
+### `SearchFilters`
+
+Defined in [src/rag_learning/filters.py](../src/rag_learning/filters.py).
+
+Fields include:
+
+- `source_types`
+- `module`
+- `ticket_id`
+- `change_id`
+- `symbol`
+- `language`
+- `updated_after`
+
+Purpose:
+
+- represent the query-time constraints passed from the CLI to retrieval
+
+### `Citation`
+
+Defined in [src/rag_learning/citations.py](../src/rag_learning/citations.py).
+
+Fields include:
+
+- chunk identity such as `chunk_id` and `source_path`
+- metadata such as `module`, `ticket_id`, `change_id`, and `symbol`
+- retrieval score
+
+Purpose:
+
+- represent one evidence item in a format that is easy to show to the model and the user
+
+## What Phase 4 Adds
+
+Phase 4 does not replace the earlier RAG loop.
+
+It sharpens it.
+
+### More precise filtering
+
+The CLI can now narrow retrieval with more than one kind of clue.
+
+Examples:
+
+- search only code and tickets
+- search only the `payments` module
+- search only evidence linked to `TKT-204`
+- search only symbols whose name contains `retry`
+- search only code chunks with `language=python`
+
+This matters because as the project grows, a broad similarity search can retrieve evidence that is relevant in general but not precise enough for the question being asked.
+
+### Clearer evidence presentation
+
+Before Phase 4, citations were returned as one flat text list.
+
+Now the code builds structured `Citation` objects and groups them by source type.
+
+That means the terminal output becomes easier to read:
+
+1. documentation is shown together
+2. tickets are shown together
+3. change notes are shown together
+4. code is shown together
+
+This is a small change in code, but a big improvement in usability.
 
 ## Execution Flow: `python -m rag_learning.cli index`
 
