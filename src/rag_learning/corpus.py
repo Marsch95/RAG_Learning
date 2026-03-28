@@ -4,6 +4,9 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
+from .config import CHANGES_DIR, DOCS_DIR, PROJECT_ROOT, TICKETS_DIR
+from .metadata import build_document_metadata, parse_markdown_with_front_matter
+
 
 @dataclass(slots=True)
 class Document:
@@ -11,6 +14,10 @@ class Document:
     source_path: str
     title: str
     source_type: str = "doc"
+    module: str = "general"
+    ticket_id: str | None = None
+    change_id: str | None = None
+    updated_at: str | None = None
 
 
 @dataclass(slots=True)
@@ -20,21 +27,60 @@ class Chunk:
     source_path: str
     title: str
     source_type: str
+    module: str = "general"
+    ticket_id: str | None = None
+    change_id: str | None = None
+    updated_at: str | None = None
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, str | None]:
         return asdict(self)
 
 
-def load_markdown_documents(docs_dir: Path) -> list[Document]:
+def load_project_documents() -> list[Document]:
+    documents: list[Document] = []
+    sources = (
+        (DOCS_DIR, "doc"),
+        (TICKETS_DIR, "ticket"),
+        (CHANGES_DIR, "change"),
+    )
+
+    for directory, source_type in sources:
+        if directory.exists():
+            documents.extend(
+                load_markdown_documents(directory, default_source_type=source_type)
+            )
+
+    return documents
+
+
+def load_markdown_documents(
+    docs_dir: Path,
+    *,
+    default_source_type: str,
+) -> list[Document]:
     documents: list[Document] = []
     for path in sorted(docs_dir.glob("*.md")):
-        text = path.read_text(encoding="utf-8").strip()
-        title = first_heading(text) or path.stem.replace("_", " ").title()
+        raw_text = path.read_text(encoding="utf-8")
+        front_matter, text = parse_markdown_with_front_matter(raw_text)
+        metadata = build_document_metadata(
+            front_matter,
+            default_source_type=default_source_type,
+        )
+        title = (
+            front_matter.get("title")
+            or first_heading(text)
+            or path.stem.replace("_", " ").replace("-", " ").title()
+        )
         documents.append(
             Document(
                 text=text,
-                source_path=str(path.relative_to(docs_dir.parent.parent)),
+                source_path=str(path.relative_to(PROJECT_ROOT)),
                 title=title,
+                source_type=metadata.source_type,
+                module=metadata.module,
+                ticket_id=metadata.ticket_id,
+                change_id=metadata.change_id,
+                updated_at=metadata.updated_at,
             )
         )
     return documents
@@ -59,11 +105,15 @@ def chunk_documents(
         for index, chunk_text in enumerate(split_text(document.text, chunk_size, chunk_overlap)):
             chunks.append(
                 Chunk(
-                    chunk_id=f"{Path(document.source_path).stem}-chunk-{index + 1}",
+                    chunk_id=f"{document.source_type}-{Path(document.source_path).stem}-chunk-{index + 1}",
                     text=chunk_text,
                     source_path=document.source_path,
                     title=document.title,
                     source_type=document.source_type,
+                    module=document.module,
+                    ticket_id=document.ticket_id,
+                    change_id=document.change_id,
+                    updated_at=document.updated_at,
                 )
             )
     return chunks

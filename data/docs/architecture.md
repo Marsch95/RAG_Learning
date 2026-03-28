@@ -1,3 +1,10 @@
+---
+title: Architecture Overview
+source_type: doc
+module: platform
+updated_at: 2026-03-01
+---
+
 # Architecture Overview
 
 Acme Checkout is a fictional retailer checkout platform used by store and platform engineering teams.

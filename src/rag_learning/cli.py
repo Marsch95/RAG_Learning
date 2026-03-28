@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 
 from .chatbot import RAGChatbot
+from .metadata import SearchFilters
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -13,6 +14,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     ask_parser = subparsers.add_parser("ask", help="Ask a question against the local index")
     ask_parser.add_argument("question", help="Question to ask the chatbot")
+    ask_parser.add_argument(
+        "--source-type",
+        choices=["doc", "ticket", "change"],
+        help="Limit retrieval to one source type",
+    )
+    ask_parser.add_argument(
+        "--module",
+        help="Limit retrieval to one module such as authentication, notifications, payments, or platform",
+    )
+    ask_parser.add_argument(
+        "--ticket-id",
+        help="Limit retrieval to one fake ticket such as TKT-204",
+    )
     return parser
 
 
@@ -27,7 +41,16 @@ def main() -> None:
         return
 
     if args.command == "ask":
-        result = chatbot.ask(args.question)
+        filters = SearchFilters(
+            source_type=args.source_type,
+            module=args.module,
+            ticket_id=args.ticket_id,
+        )
+        result = chatbot.ask(args.question, filters=filters)
+        if not filters.is_empty():
+            print("Filters:\n")
+            print(filters.describe())
+            print()
         print("Answer:\n")
         print(result.answer)
         print("\nCitations:")

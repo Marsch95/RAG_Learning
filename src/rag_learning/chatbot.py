@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .config import DOCS_DIR, Settings
-from .corpus import chunk_documents, load_markdown_documents
+from .config import Settings
+from .corpus import chunk_documents, load_project_documents
+from .metadata import SearchFilters
 from .ollama_client import OllamaClient
 from .retrieval import IndexedChunk, load_index, rank_chunks, save_index
 
@@ -20,7 +21,7 @@ class RAGChatbot:
         self.ollama = OllamaClient(self.settings.ollama_base_url)
 
     def build_index(self) -> int:
-        documents = load_markdown_documents(DOCS_DIR)
+        documents = load_project_documents()
         chunks = chunk_documents(
             documents,
             chunk_size=self.settings.chunk_size,
@@ -35,12 +36,30 @@ class RAGChatbot:
         save_index(indexed_chunks)
         return len(indexed_chunks)
 
-    def ask(self, question: str) -> AnswerResult:
+    def ask(
+        self,
+        question: str,
+        *,
+        filters: SearchFilters | None = None,
+    ) -> AnswerResult:
         indexed_chunks = load_index()
         query_embedding = self.ollama.embed(self.settings.embed_model, question)
-        ranked = rank_chunks(query_embedding, indexed_chunks, top_k=self.settings.top_k)
+        ranked = rank_chunks(
+            query_embedding,
+            indexed_chunks,
+            top_k=self.settings.top_k,
+            filters=filters,
+        )
+        if not ranked:
+            return AnswerResult(
+                answer=(
+                    "No indexed chunks matched the question with the current filters. "
+                    "Try rebuilding the index or relaxing the filters."
+                ),
+                citations=[],
+            )
         context = self._build_context(ranked)
-        prompt = self._build_prompt(question, context)
+        prompt = self._build_prompt(question, context, filters)
         answer = self.ollama.chat(self.settings.chat_model, prompt)
         citations = [self._citation_text(chunk) for _, chunk in ranked]
         return AnswerResult(answer=answer, citations=citations)
@@ -59,14 +78,32 @@ class RAGChatbot:
             )
         return "\n\n".join(sections)
 
-    def _build_prompt(self, question: str, context: str) -> str:
+    def _build_prompt(
+        self,
+        question: str,
+        context: str,
+        filters: SearchFilters | None,
+    ) -> str:
+        filter_text = filters.describe() if filters and not filters.is_empty() else "none"
         return (
             "Use the context to answer the question. "
             "If the answer is not supported by the context, say that clearly. "
             "When you answer, mention the citations you used.\n\n"
+            f"Active filters: {filter_text}\n\n"
             f"Question: {question}\n\n"
             f"Context:\n{context}"
         )
 
     def _citation_text(self, chunk: IndexedChunk) -> str:
-        return f"{chunk.chunk_id} ({chunk.source_path})"
+        details = [
+            chunk.source_path,
+            f"source_type={chunk.source_type}",
+            f"module={chunk.module}",
+        ]
+        if chunk.ticket_id:
+            details.append(f"ticket_id={chunk.ticket_id}")
+        if chunk.change_id:
+            details.append(f"change_id={chunk.change_id}")
+        if chunk.updated_at:
+            details.append(f"updated_at={chunk.updated_at}")
+        return f"{chunk.chunk_id} ({', '.join(details)})"

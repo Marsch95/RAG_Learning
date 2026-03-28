@@ -1,6 +1,6 @@
 # Technical Walkthrough
 
-This document explains what the Phase 1 code is doing, step by step.
+This document explains what the project is doing, starting with the Phase 1 baseline and then showing what Phase 2 adds.
 
 The goal is not only to tell you what commands to run, but to make the code easier to read and reason about.
 
@@ -779,3 +779,203 @@ The important understanding is this:
 7. citations show what evidence was used
 
 If that mental model is clear, then the project is doing its job.
+
+## Phase 2 Additions
+
+Phase 2 keeps the same overall RAG loop, but it upgrades the input corpus and retrieval controls.
+
+The key idea is simple:
+
+Phase 1 answered questions from docs.
+
+Phase 2 answers questions from docs, tickets, and change notes, while keeping the system readable for beginners.
+
+## New Source Types
+
+The project now indexes three synthetic source folders:
+
+1. `data/docs`
+2. `data/tickets`
+3. `data/changes`
+
+Why that matters:
+
+- docs explain what the system does
+- tickets explain why work was requested
+- change notes explain what was delivered
+
+That combination is much closer to a real internal engineering assistant.
+
+## New File: `metadata.py`
+
+[src/rag_learning/metadata.py](../src/rag_learning/metadata.py) introduces two important ideas.
+
+### `DocumentMetadata`
+
+This is a small structured container for metadata attached to a document.
+
+It currently carries fields such as:
+
+- `source_type`
+- `module`
+- `ticket_id`
+- `change_id`
+- `updated_at`
+
+### `SearchFilters`
+
+This stores optional user filters from the CLI.
+
+It currently supports:
+
+- `source_type`
+- `module`
+- `ticket_id`
+
+Why this split is useful:
+
+- `DocumentMetadata` describes the indexed data
+- `SearchFilters` describes what the user wants to narrow down
+
+## Front Matter Parsing
+
+Phase 2 adds a very small front matter parser.
+
+Example file shape:
+
+```markdown
+---
+title: Ticket TKT-204: Add Retry Logic for Payment Gateway
+source_type: ticket
+module: payments
+ticket_id: TKT-204
+updated_at: 2026-03-11
+---
+```
+
+The parser reads those key-value pairs before the markdown body.
+
+This is intentionally simple.
+
+It avoids adding a YAML dependency while still teaching the main idea: retrieval works better when chunks carry structured context.
+
+## Phase 2 Indexing Flow
+
+The `index` command still follows the same broad steps, but the load stage is wider.
+
+### Step 1: `load_project_documents()` gathers all source folders
+
+Instead of reading only `data/docs`, the project now loops through docs, tickets, and changes.
+
+Each markdown file becomes a `Document` with both text and metadata.
+
+### Step 2: document metadata is copied into chunks
+
+When `chunk_documents()` creates a `Chunk`, it now keeps fields such as `module`, `ticket_id`, and `change_id`.
+
+That means metadata survives the split into smaller retrieval units.
+
+This is important because retrieval happens at chunk level, not whole-file level.
+
+### Step 3: `IndexedChunk` stores vectors plus metadata
+
+The indexed JSON now contains richer entries.
+
+Conceptually, an item now looks more like this:
+
+```json
+{
+    "chunk_id": "ticket-ticket-retry-logic-chunk-1",
+    "source_type": "ticket",
+    "module": "payments",
+    "ticket_id": "TKT-204",
+    "text": "Store test runs showed intermittent payment gateway failures...",
+    "embedding": [0.12, -0.03, 0.44]
+}
+```
+
+The exact vector is much longer, but the important change is that retrieval units are now easier to filter and inspect.
+
+## Phase 2 Retrieval Flow
+
+### Step 1: the CLI turns flags into `SearchFilters`
+
+The `ask` command can now accept:
+
+- `--source-type`
+- `--module`
+- `--ticket-id`
+
+The CLI turns those values into a `SearchFilters` object.
+
+### Step 2: ranking only considers matching chunks
+
+In [src/rag_learning/retrieval.py](../src/rag_learning/retrieval.py), `rank_chunks()` now checks metadata filters before scoring similarity.
+
+That means the system can answer questions like:
+
+- “show me only ticket evidence for retry logic”
+- “search only the notifications module”
+- “find evidence linked to TKT-204”
+
+This is still simple filtering, but it is an important step toward more realistic retrieval behavior.
+
+### Step 3: citations now expose useful metadata
+
+The citation text now includes fields such as:
+
+- source path
+- source type
+- module
+- ticket ID
+- change ID
+- update date
+
+Why that matters:
+
+- you can tell whether the answer came from a doc, ticket, or change note
+- you can inspect whether the correct module was retrieved
+- you can trace a change back to a ticket more easily
+
+## What Phase 2 Teaches
+
+Phase 2 teaches an important practical lesson:
+
+retrieval quality is not only about embeddings.
+
+It is also about the shape of your source data.
+
+Even a small amount of structure can make the system feel much more useful.
+
+In this project, that structure comes from:
+
+- separate source folders
+- front matter metadata
+- chunk-level metadata fields
+- user-facing filters
+
+## Good Beginner Experiments For Phase 2
+
+Try these in order:
+
+1. Ask `Why was retry logic added?` without filters.
+2. Ask the same question with `--source-type ticket`.
+3. Ask `What changed for this ticket?` with `--ticket-id TKT-204`.
+4. Ask `What changed in the notification module?` with `--module notifications`.
+5. Edit one ticket or change note, rebuild the index, and compare the citations.
+
+Those experiments make the value of metadata much easier to see.
+
+## What Phase 2 Still Does Not Solve
+
+Phase 2 is stronger than Phase 1, but it is still intentionally small.
+
+It does not yet include:
+
+- source code retrieval
+- hybrid keyword plus vector search
+- re-ranking
+- formal evaluation
+- database retrieval
+
+Those are later phases.

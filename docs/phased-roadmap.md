@@ -64,7 +64,10 @@ Expand from plain docs to synthetic professional signals such as fake issue tick
 - `data/tickets/*.md`
 - `data/changes/*.md`
 - `src/rag_learning/metadata.py`
-- updates to ingestion and retrieval code
+- updates to `src/rag_learning/corpus.py`
+- updates to `src/rag_learning/retrieval.py`
+- updates to `src/rag_learning/chatbot.py`
+- updates to `src/rag_learning/cli.py`
 
 ### Code
 
@@ -72,13 +75,17 @@ This phase adds:
 
 - metadata fields such as `source_type`, `module`, `ticket_id`, and `updated_at`
 - metadata-aware retrieval
+- CLI filters for `source_type`, `module`, and `ticket_id`
 - fake tickets that explain why changes were made
+- fake change notes that link implementation summaries back to tickets
 
 ### Explanation
 
 Professional internal assistants usually rely on more than just documentation.
 
 Tickets explain intent, tradeoffs, and change history.
+
+This is the first phase where the chatbot can answer questions about why work happened, not just what a module does.
 
 ### Next Phase Preview
 
@@ -139,9 +146,9 @@ Help the chatbot retrieve the right evidence more precisely.
 
 This phase adds:
 
-- query-time filters
-- consistent citation identifiers
-- grouped evidence in the output
+- more expressive query-time filters
+- stronger citation formatting and grouping
+- cleaner evidence presentation for mixed sources
 
 ### Explanation
 
@@ -226,9 +233,10 @@ The final concept should support:
 - metadata filtering
 - citations
 - evaluation
+- database retrieval
 
 This phase keeps the project grounded: learn the small version first, then grow it deliberately.
 
 ### Next Phase Preview
 
-The next real implementation step after Phase 1 is Phase 2: add tickets, metadata, and change history.
+The next real implementation step after Phase 2 is Phase 3: add a small synthetic codebase for source code retrieval.

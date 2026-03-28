@@ -1,3 +1,10 @@
+---
+title: Authentication Module
+source_type: doc
+module: authentication
+updated_at: 2026-03-05
+---
+
 # Authentication Module
 
 The authentication module is the main entry point for cashier and supervisor sign-in.

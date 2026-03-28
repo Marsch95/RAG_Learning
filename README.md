@@ -1,77 +1,71 @@
 # RAG Learning Project
 
-This project teaches Retrieval-Augmented Generation (RAG) by building a small internal chatbot for a fictional software team.
-
-The chatbot starts with a single job:
-
-- read local markdown documents
-- retrieve the most relevant notes for a question
-- ask a local Ollama model to answer using those notes
-- show citations so you can inspect the retrieved evidence
-
-The project is designed for learning first.
-
-- It uses synthetic local data.
-- It avoids enterprise setup.
-- It keeps the code small and readable.
-- It grows in phases instead of trying to solve everything at once.
-
-## Fictional Product Domain
+This project teaches Retrieval-Augmented Generation by building a small internal chatbot for a fictional software team.
 
 The chatbot supports a fictional product called `Acme Checkout`.
 
-This is a small retailer checkout platform used by a software team to handle:
+It answers questions about:
 
-- cashier authentication
-- receipt and alert notifications
-- retry logic for payment-related services
-- internal engineering notes
+- authentication behavior
+- notification design
+- retry logic for payment failures
+- fake tickets that explain why changes happened
+- fake change notes that link work back to tickets
 
-That lets you ask questions such as:
+The project is intentionally small and local.
+
+- It uses synthetic markdown files.
+- It runs with local Ollama models.
+- It keeps the code readable for beginners.
+- It grows in phases instead of jumping to enterprise architecture.
+
+## Current State
+
+Phase 2 is now implemented.
+
+That means the chatbot can retrieve from:
+
+- engineering docs in `data/docs`
+- fake tickets in `data/tickets`
+- fake change notes in `data/changes`
+
+It also supports simple metadata-aware retrieval with filters for:
+
+- `source_type`
+- `module`
+- `ticket_id`
+
+This is enough to ask more realistic internal questions such as:
 
 - Where is authentication handled?
 - What does the notification module do?
 - Why was retry logic added?
-- How does the checkout system handle temporary payment failures?
-- What do the docs say about this module?
-
-## Phase 1 Goal
-
-Phase 1 implements simple RAG over markdown documentation.
-
-You will learn these concepts directly:
-
-1. Loading documents
-2. Chunking text into smaller pieces
-3. Generating embeddings with Ollama
-4. Ranking chunks by similarity
-5. Building a grounded prompt
-6. Returning citations with the answer
-
-The code intentionally does not hide these steps behind a large framework.
+- Which ticket introduced retry logic?
+- What do the docs say about the payment retry change?
 
 ## Project Structure
 
 ```text
 RAG_Learning/
 ├── data/
-│   └── docs/
-│       ├── architecture.md
-│       ├── authentication.md
-│       ├── notifications.md
-│       └── retries.md
+│   ├── changes/
+│   ├── docs/
+│   ├── index/
+│   └── tickets/
 ├── docs/
-│   └── phased-roadmap.md
+│   ├── phased-roadmap.md
+│   └── technical-walkthrough.md
 ├── src/
 │   └── rag_learning/
-│       ├── __init__.py
 │       ├── chatbot.py
 │       ├── cli.py
 │       ├── config.py
 │       ├── corpus.py
+│       ├── metadata.py
 │       ├── ollama_client.py
 │       └── retrieval.py
 ├── requirements.txt
+├── pyproject.toml
 └── AGENTS.md
 ```
 
@@ -79,8 +73,8 @@ RAG_Learning/
 
 - Python 3.11+
 - Ollama running locally
-- at least one chat model pulled in Ollama
-- at least one embedding model pulled in Ollama
+- one chat model available in Ollama
+- one embedding model available in Ollama
 
 Example setup:
 
@@ -89,11 +83,9 @@ ollama pull gemma3:latest
 ollama pull embeddinggemma:latest
 ```
 
-You can use different model names if you already have preferred local models.
-
 ## Installation
 
-Create and activate a virtual environment, then install the package in editable mode.
+Run these commands from the repository root:
 
 ```powershell
 python -m venv .venv
@@ -103,25 +95,17 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-`pip install -e .` matters here because this project uses a `src/` layout.
-
-The Python package lives in `src/rag_learning`, not at the repository root.
-
-Editable install tells Python to treat your local working copy as an installed package, so commands like `python -m rag_learning.cli index` can import `rag_learning` correctly.
-
-If you skip the editable install, Python usually will not find `rag_learning` unless you manually modify `PYTHONPATH` or run commands from a specially configured environment.
+The editable install matters because this repository uses a `src/` layout.
 
 ## Configure Models
 
-The CLI uses these defaults:
+Default settings:
 
 - chat model: `gemma3:latest`
 - embedding model: `embeddinggemma:latest`
 - Ollama URL: `http://localhost:11434`
 
-These defaults were chosen because Gemma appears to be the more stable option on your local machine.
-
-You can override them with environment variables:
+Optional overrides:
 
 ```powershell
 $env:OLLAMA_BASE_URL = "http://localhost:11434"
@@ -129,11 +113,7 @@ $env:OLLAMA_CHAT_MODEL = "gemma3:latest"
 $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 ```
 
-If your local Ollama installation uses different model names, set these environment variables before running the commands.
-
-## Run Phase 1
-
-Run the commands from the repository root after activating the virtual environment.
+## Run Phase 2
 
 ### 1. Build the local index
 
@@ -141,148 +121,119 @@ Run the commands from the repository root after activating the virtual environme
 python -m rag_learning.cli index
 ```
 
-This command:
+This command now reads all three synthetic sources:
 
-- reads the markdown files in `data/docs`
-- splits them into chunks
-- generates embeddings with Ollama
-- stores the index in `data/index/index.json`
+- `data/docs`
+- `data/tickets`
+- `data/changes`
 
-### 2. Ask a question
+It parses front matter metadata, chunks the text, creates embeddings, and writes the local JSON index to `data/index/index.json`.
 
-```powershell
-python -m rag_learning.cli ask "Where is authentication handled?"
-```
-
-Example questions:
+### 2. Ask broad questions
 
 ```powershell
-python -m rag_learning.cli ask "What does the notification module do?"
 python -m rag_learning.cli ask "Why was retry logic added?"
-python -m rag_learning.cli ask "What do the docs say about retries?"
+python -m rag_learning.cli ask "Which ticket introduced retry logic?"
+python -m rag_learning.cli ask "What does the notification module do?"
 ```
 
-Do not pass a file path to `-m`.
+### 3. Ask filtered questions
 
-This is wrong:
+Filter by source type:
 
 ```powershell
-python -m .\src\rag_learning\rag_learning.cli index
+python -m rag_learning.cli ask "Why was retry logic added?" --source-type ticket
 ```
 
-`-m` expects a Python module name, not a filesystem path.
-
-This project exposes the CLI as the module `rag_learning.cli`, so the correct form is:
+Filter by module:
 
 ```powershell
-python -m rag_learning.cli index
+python -m rag_learning.cli ask "What changed in the notification module?" --module notifications
 ```
 
-When Python runs `python -m rag_learning.cli` it:
+Filter by ticket:
 
-1. Finds the installed `rag_learning` package
-2. Loads the `cli.py` module inside that package
-3. Sets that module as the entry module for the process
-4. Runs the `if __name__ == "__main__": main()` block
+```powershell
+python -m rag_learning.cli ask "What changed for this ticket?" --ticket-id TKT-204
+```
 
-That is why the commands work as normal CLI commands even though you are starting them through Python's module system.
+You can combine filters:
 
-## How Phase 1 Works
+```powershell
+python -m rag_learning.cli ask "What do the docs say about this ticket?" --source-type doc --ticket-id TKT-204
+```
 
-The full loop is intentionally visible.
+## How Phase 2 Works
 
-### Step 1: Load documents
+The Phase 1 loop is still visible, but the input corpus is richer.
 
-The code reads markdown files from `data/docs`.
+### Step 1: Load multiple source folders
 
-Each file becomes a document with metadata:
+The loader reads markdown files from docs, tickets, and change notes.
 
-- file path
-- title
-- source type
+### Step 2: Parse front matter metadata
 
-### Step 2: Chunk documents
+Each file can define fields such as:
 
-Long documents are split into smaller chunks.
+- `title`
+- `source_type`
+- `module`
+- `ticket_id`
+- `change_id`
+- `updated_at`
 
-This matters because embeddings and retrieval work better when each unit has a focused idea instead of an entire long file.
+That metadata is carried into every chunk.
 
-### Step 3: Create embeddings
+### Step 3: Chunk and embed as before
 
-Each chunk is sent to the Ollama embeddings endpoint.
+The chunking and embedding flow is still simple on purpose.
 
-The result is a vector for each chunk.
+That keeps Phase 2 focused on understanding metadata, not on changing the retrieval algorithm.
 
-Vectors let us compare semantic similarity instead of exact keyword matches.
+### Step 4: Filter before ranking
 
-### Step 4: Retrieve relevant chunks
+If you pass CLI filters, the retriever narrows the candidate chunks before similarity ranking.
 
-When you ask a question, the question is also embedded.
+This is the first step toward more precise internal search.
 
-The code computes cosine similarity between the question vector and the stored chunk vectors.
+### Step 5: Return richer citations
 
-The top matches become the context for the final answer.
+Each citation now shows not only the file path, but also the important metadata attached to that chunk.
 
-### Step 5: Ask the model to answer from context
+That makes it easier to inspect whether retrieval found the right kind of evidence.
 
-The prompt tells the model:
+## Why Phase 2 Matters
 
-- answer only from the retrieved context
-- say when the context is missing something
-- cite the supporting chunks
+Plain docs answer “what” questions reasonably well.
 
-### Step 6: Print citations
+Tickets and change notes help answer “why” and “which change introduced this” questions.
 
-The CLI prints:
+That makes the learning project feel more like a real internal engineering assistant without making the code much more complex.
 
-- the answer
-- the retrieved chunk citations
+## Current Limitations
 
-This helps you inspect whether retrieval is working well.
+The project is still intentionally small.
 
-## Why This Is A Good Starting Point
+- The index is still a JSON file.
+- Retrieval still uses simple cosine similarity.
+- There is no code retrieval yet.
+- There is no evaluation loop yet.
+- There is no database retrieval yet.
 
-This first phase is small but complete.
-
-It is already useful because you can ask grounded questions over local docs.
-
-It is also a strong teaching base because later phases can extend the same pipeline with:
-
-- source code files
-- fake tickets
-- metadata filtering
-- better citations
-- evaluation and comparison
-
-## Limitations In Phase 1
-
-This version is intentionally limited.
-
-- It only reads markdown docs.
-- It stores the index in a JSON file.
-- It uses a simple chunking strategy.
-- It does not yet support ticket tracing.
-- It does not yet retrieve code files.
-- It does not yet run formal evaluation.
-
-Those limitations are addressed in the roadmap.
-
-See [docs/phased-roadmap.md](docs/phased-roadmap.md).
+Those limitations are addressed in [docs/phased-roadmap.md](docs/phased-roadmap.md).
 
 ## Beginner Study Order
 
-If you want to learn the concepts step by step, use this order:
+If you want to understand Phase 2 in a sensible order:
 
 1. Read [docs/phased-roadmap.md](docs/phased-roadmap.md)
 2. Read [docs/technical-walkthrough.md](docs/technical-walkthrough.md)
-3. Read [src/rag_learning/corpus.py](src/rag_learning/corpus.py)
-4. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
-5. Read [src/rag_learning/ollama_client.py](src/rag_learning/ollama_client.py)
+3. Read [src/rag_learning/metadata.py](src/rag_learning/metadata.py)
+4. Read [src/rag_learning/corpus.py](src/rag_learning/corpus.py)
+5. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
 6. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
-7. Run `index`
-8. Run `ask`
-9. Change a document and rebuild the index
+7. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
+8. Run `index`
+9. Run `ask` with and without filters
 
-That will make the full RAG loop much easier to understand.
-
-For a deeper line-by-line explanation of the Phase 1 code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).
+For a line-by-line explanation of the code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).

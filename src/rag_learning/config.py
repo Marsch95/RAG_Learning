@@ -8,6 +8,8 @@ import os
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data"
 DOCS_DIR = DATA_DIR / "docs"
+TICKETS_DIR = DATA_DIR / "tickets"
+CHANGES_DIR = DATA_DIR / "changes"
 INDEX_DIR = DATA_DIR / "index"
 INDEX_FILE = INDEX_DIR / "index.json"
 

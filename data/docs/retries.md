@@ -1,3 +1,11 @@
+---
+title: Retry Logic
+source_type: doc
+module: payments
+ticket_id: TKT-204
+updated_at: 2026-03-12
+---
+
 # Retry Logic
 
 Retry logic was added after the team saw intermittent failures while calling a simulated payment gateway.
@@ -5,6 +13,8 @@ Retry logic was added after the team saw intermittent failures while calling a s
 Before the change, a single temporary network failure could cause a checkout attempt to fail.
 
 The retry helper now retries transient failures a small number of times with a short backoff between attempts.
+
+This work was tracked under ticket TKT-204 and later summarized in change note CHG-001.
 
 The team added this behavior to improve checkout resilience without hiding persistent problems.
 

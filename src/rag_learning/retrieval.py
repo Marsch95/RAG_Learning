@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .config import INDEX_FILE, ensure_index_dir
 from .corpus import Chunk
+from .metadata import SearchFilters, matches_filters
 
 
 @dataclass(slots=True)
@@ -17,6 +18,10 @@ class IndexedChunk:
     title: str
     source_type: str
     embedding: list[float]
+    module: str = "general"
+    ticket_id: str | None = None
+    change_id: str | None = None
+    updated_at: str | None = None
 
     @classmethod
     def from_chunk(cls, chunk: Chunk, embedding: list[float]) -> "IndexedChunk":
@@ -47,10 +52,12 @@ def rank_chunks(
     indexed_chunks: list[IndexedChunk],
     *,
     top_k: int,
+    filters: SearchFilters | None = None,
 ) -> list[tuple[float, IndexedChunk]]:
     scored_chunks = [
         (cosine_similarity(query_embedding, chunk.embedding), chunk)
         for chunk in indexed_chunks
+        if matches_filters(chunk, filters)
     ]
     scored_chunks.sort(key=lambda item: item[0], reverse=True)
     return scored_chunks[:top_k]
