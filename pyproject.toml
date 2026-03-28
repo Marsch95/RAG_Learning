@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# This is the installable package name used by pip metadata.
+# Import statements still use the Python package name `rag_learning`.
+name = "rag-learning"
+version = "0.1.0"
+description = "Beginner-friendly local RAG learning project using Ollama"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.setuptools]
+# The code lives under src/, so editable install adds that source tree to Python's
+# import path instead of copying files somewhere else.
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+# Find importable packages under src/, including src/rag_learning.
+where = ["src"]
