@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from .chatbot import RAGChatbot
 from .citations import group_citations
+from .config import EVAL_QUESTIONS_FILE, EVAL_REPORT_FILE
+from .evaluation import evaluate_questions, summary_lines
 from .filters import SearchFilters
 
 
@@ -12,6 +15,23 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("index", help="Build the local document index")
+
+    evaluate_parser = subparsers.add_parser("evaluate", help="Run the Phase 5 evaluation set")
+    evaluate_parser.add_argument(
+        "--questions-file",
+        default=str(EVAL_QUESTIONS_FILE),
+        help="Path to the JSON evaluation dataset",
+    )
+    evaluate_parser.add_argument(
+        "--output",
+        default=str(EVAL_REPORT_FILE),
+        help="Path to write the JSON evaluation report",
+    )
+    evaluate_parser.add_argument(
+        "--with-answers",
+        action="store_true",
+        help="Also generate answers so the report can be used for manual answer review",
+    )
 
     ask_parser = subparsers.add_parser("ask", help="Ask a question against the local index")
     ask_parser.add_argument("question", help="Question to ask the chatbot")
@@ -80,6 +100,19 @@ def main() -> None:
             print(f"\n{group.heading}:")
             for citation in group.citations:
                 print(f"- {citation.display_line()}")
+        return
+
+    if args.command == "evaluate":
+        report = evaluate_questions(
+            chatbot,
+            questions_path=Path(args.questions_file),
+            include_answers=args.with_answers,
+            output_path=Path(args.output),
+        )
+        print("Evaluation Summary:\n")
+        for line in summary_lines(report):
+            print(line)
+        print(f"\nDetailed report written to {args.output}")
         return
 
     parser.error("Unknown command")

@@ -181,6 +181,9 @@ Measure the system instead of guessing whether it improved.
 - `eval/questions.json`
 - `src/rag_learning/evaluation.py`
 - `docs/evaluation-guide.md`
+- updates to `src/rag_learning/chatbot.py`
+- updates to `src/rag_learning/cli.py`
+- updates to `README.md`
 
 ### Code
 
@@ -189,6 +192,7 @@ This phase adds:
 - a small labeled question set
 - retrieval inspection metrics
 - answer quality review workflow
+- a CLI evaluation command that writes a JSON report
 
 ### Explanation
 

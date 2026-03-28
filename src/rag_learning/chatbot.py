@@ -43,14 +43,7 @@ class RAGChatbot:
         *,
         filters: SearchFilters | None = None,
     ) -> AnswerResult:
-        indexed_chunks = load_index()
-        query_embedding = self.ollama.embed(self.settings.embed_model, question)
-        ranked = rank_chunks(
-            query_embedding,
-            indexed_chunks,
-            top_k=self.settings.top_k,
-            filters=filters,
-        )
+        ranked = self._rank_question(question, filters=filters)
         if not ranked:
             return AnswerResult(
                 answer=(
@@ -64,6 +57,15 @@ class RAGChatbot:
         answer = self.ollama.chat(self.settings.chat_model, prompt)
         citations = build_citations(ranked)
         return AnswerResult(answer=answer, citations=citations)
+
+    def retrieve(
+        self,
+        question: str,
+        *,
+        filters: SearchFilters | None = None,
+    ) -> list[Citation]:
+        ranked = self._rank_question(question, filters=filters)
+        return build_citations(ranked)
 
     def _build_context(self, ranked: list[tuple[float, IndexedChunk]]) -> str:
         sections: list[str] = []
@@ -92,4 +94,19 @@ class RAGChatbot:
             f"Active filters: {filter_text}\n\n"
             f"Question: {question}\n\n"
             f"Context:\n{context}"
+        )
+
+    def _rank_question(
+        self,
+        question: str,
+        *,
+        filters: SearchFilters | None = None,
+    ) -> list[tuple[float, IndexedChunk]]:
+        indexed_chunks = load_index()
+        query_embedding = self.ollama.embed(self.settings.embed_model, question)
+        return rank_chunks(
+            query_embedding,
+            indexed_chunks,
+            top_k=self.settings.top_k,
+            filters=filters,
         )

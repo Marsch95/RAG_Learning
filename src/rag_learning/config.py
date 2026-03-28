@@ -13,6 +13,9 @@ CHANGES_DIR = DATA_DIR / "changes"
 CODEBASE_DIR = DATA_DIR / "codebase"
 INDEX_DIR = DATA_DIR / "index"
 INDEX_FILE = INDEX_DIR / "index.json"
+EVAL_DIR = PROJECT_ROOT / "eval"
+EVAL_QUESTIONS_FILE = EVAL_DIR / "questions.json"
+EVAL_REPORT_FILE = EVAL_DIR / "last-report.json"
 
 
 @dataclass(slots=True)
@@ -27,3 +30,7 @@ class Settings:
 
 def ensure_index_dir() -> None:
     INDEX_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_eval_dir() -> None:
+    EVAL_DIR.mkdir(parents=True, exist_ok=True)

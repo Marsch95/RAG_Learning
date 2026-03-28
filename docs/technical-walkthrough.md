@@ -153,6 +153,19 @@ Its job is to:
 
 This makes the evidence output easier for beginners to inspect.
 
+### [src/rag_learning/evaluation.py](../src/rag_learning/evaluation.py)
+
+This file was added in Phase 5.
+
+Its job is to:
+
+- load the JSON evaluation dataset
+- run each question against the current retrieval pipeline
+- score a few simple retrieval checks
+- write a report that is easy to inspect later
+
+This is intentionally lightweight.
+
 ### [src/rag_learning/ollama_client.py](../src/rag_learning/ollama_client.py)
 
 This file talks to Ollama over HTTP.
@@ -180,6 +193,8 @@ Its job is to:
 Before looking at the functions, it helps to know the three main data shapes used by the code.
 
 Phase 4 adds two more small data shapes that are worth knowing.
+
+Phase 5 adds two more.
 
 ### `Document`
 
@@ -257,6 +272,35 @@ Purpose:
 
 - represent one evidence item in a format that is easy to show to the model and the user
 
+### `EvaluationCase`
+
+Defined in [src/rag_learning/evaluation.py](../src/rag_learning/evaluation.py).
+
+Fields include:
+
+- the question text
+- any active filters
+- expected metadata such as module, ticket, change ID, symbol, and paths
+- reference points for manual answer review
+
+Purpose:
+
+- represent one labeled evaluation question
+
+### `EvaluationReport`
+
+Defined in [src/rag_learning/evaluation.py](../src/rag_learning/evaluation.py).
+
+Fields include:
+
+- summary counts and rates
+- per-question results
+- optional answers for manual review
+
+Purpose:
+
+- represent the output of a full evaluation run
+
 ## What Phase 4 Adds
 
 Phase 4 does not replace the earlier RAG loop.
@@ -291,6 +335,61 @@ That means the terminal output becomes easier to read:
 4. code is shown together
 
 This is a small change in code, but a big improvement in usability.
+
+## What Phase 5 Adds
+
+Phase 5 adds a small measurement loop.
+
+That matters because once you start changing chunking, filters, prompts, or source data, it gets harder to tell whether the system improved or just changed.
+
+### The evaluation dataset
+
+The file `eval/questions.json` stores a small list of grounded questions.
+
+Each question includes expected metadata anchors such as:
+
+- source types
+- module
+- ticket ID
+- change ID
+- symbol name
+- source path
+
+This is enough to check whether retrieval is landing in the right neighborhood.
+
+### The evaluation runner
+
+The code in [src/rag_learning/evaluation.py](../src/rag_learning/evaluation.py) runs the following loop:
+
+1. load one case from the dataset
+2. run retrieval with the same chatbot pipeline used by `ask`
+3. compare retrieved citations to the expected metadata
+4. record simple hit or miss metrics
+5. optionally generate an answer for manual review
+6. write the final report to JSON
+
+The key design choice here is simplicity.
+
+This project is not trying to teach a large evaluation framework yet.
+
+It is teaching how to create a repeatable check that is easy to understand.
+
+### The `evaluate` CLI command
+
+Phase 5 extends the CLI with:
+
+```text
+python -m rag_learning.cli evaluate
+```
+
+This command prints a compact summary and writes a detailed report file.
+
+If you add `--with-answers`, the report also includes model answers plus blank review fields.
+
+That supports a practical workflow:
+
+1. check retrieval automatically
+2. inspect answer quality manually only when needed
 
 ## Execution Flow: `python -m rag_learning.cli index`
 

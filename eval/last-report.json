@@ -1,0 +1,550 @@
+{
+  "question_count": 7,
+  "include_answers": false,
+  "summary": {
+    "question_count": 7,
+    "source_type_hit_count": 7,
+    "source_type_hit_rate": 1.0,
+    "module_hit_count": 7,
+    "module_hit_rate": 1.0,
+    "ticket_hit_count": 7,
+    "ticket_hit_rate": 1.0,
+    "change_hit_count": 7,
+    "change_hit_rate": 1.0,
+    "symbol_hit_count": 7,
+    "symbol_hit_rate": 1.0,
+    "path_hit_count": 7,
+    "path_hit_rate": 1.0,
+    "overall_hit_count": 7,
+    "overall_hit_rate": 1.0
+  },
+  "results": [
+    {
+      "case_id": "eval-001",
+      "question": "Where is authentication handled?",
+      "filters": {
+        "source_types": [],
+        "module": "authentication",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "doc-authentication-chunk-1",
+        "title": "Authentication Module",
+        "source_path": "data\\docs\\authentication.md",
+        "source_type": "doc",
+        "module": "authentication",
+        "score": 0.526,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-05",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "doc-authentication-chunk-1",
+          "title": "Authentication Module",
+          "source_path": "data\\docs\\authentication.md",
+          "source_type": "doc",
+          "module": "authentication",
+          "score": 0.526,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-05",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "doc-authentication-chunk-2",
+          "title": "Authentication Module",
+          "source_path": "data\\docs\\authentication.md",
+          "source_type": "doc",
+          "module": "authentication",
+          "score": 0.431,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-05",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "code-auth-service-chunk-1",
+          "title": "Code Overview: auth_service",
+          "source_path": "data\\codebase\\auth_service.py",
+          "source_type": "code",
+          "module": "authentication",
+          "score": 0.427,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-05",
+          "symbol": null,
+          "language": "python"
+        }
+      ],
+      "reference_points": [
+        "Authentication is handled by the auth_service backend module.",
+        "The service validates credentials, creates a session token, and records a login audit entry."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-002",
+      "question": "What does the notification module do?",
+      "filters": {
+        "source_types": [],
+        "module": "notifications",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "doc-notifications-chunk-1",
+        "title": "Notification Module",
+        "source_path": "data\\docs\\notifications.md",
+        "source_type": "doc",
+        "module": "notifications",
+        "score": 0.596,
+        "ticket_id": "TKT-207",
+        "change_id": null,
+        "updated_at": "2026-03-14",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "doc-notifications-chunk-1",
+          "title": "Notification Module",
+          "source_path": "data\\docs\\notifications.md",
+          "source_type": "doc",
+          "module": "notifications",
+          "score": 0.596,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-14",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "code-notifications-chunk-1",
+          "title": "Code Overview: notifications",
+          "source_path": "data\\codebase\\notifications.py",
+          "source_type": "code",
+          "module": "notifications",
+          "score": 0.525,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-14",
+          "symbol": null,
+          "language": "python"
+        },
+        {
+          "chunk_id": "code-notifications-notificationservice-chunk-1",
+          "title": "Code Symbol: NotificationService",
+          "source_path": "data\\codebase\\notifications.py",
+          "source_type": "code",
+          "module": "notifications",
+          "score": 0.464,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-14",
+          "symbol": "NotificationService",
+          "language": "python"
+        }
+      ],
+      "reference_points": [
+        "The notification module sends digital receipts and in-app alerts.",
+        "It keeps message creation separate from delivery details."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-003",
+      "question": "Why was retry logic added?",
+      "filters": {
+        "source_types": [],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "doc-retries-chunk-1",
+        "title": "Retry Logic",
+        "source_path": "data\\docs\\retries.md",
+        "source_type": "doc",
+        "module": "payments",
+        "score": 0.6,
+        "ticket_id": "TKT-204",
+        "change_id": null,
+        "updated_at": "2026-03-12",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "doc-retries-chunk-1",
+          "title": "Retry Logic",
+          "source_path": "data\\docs\\retries.md",
+          "source_type": "doc",
+          "module": "payments",
+          "score": 0.6,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "doc-retries-chunk-2",
+          "title": "Retry Logic",
+          "source_path": "data\\docs\\retries.md",
+          "source_type": "doc",
+          "module": "payments",
+          "score": 0.582,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "ticket-ticket-retry-logic-chunk-2",
+          "title": "Ticket TKT-204: Add Retry Logic for Payment Gateway",
+          "source_path": "data\\tickets\\ticket-retry-logic.md",
+          "source_type": "ticket",
+          "module": "payments",
+          "score": 0.571,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-11",
+          "symbol": null,
+          "language": null
+        }
+      ],
+      "reference_points": [
+        "Retry logic was added because the simulated payment gateway had intermittent failures.",
+        "The goal was to improve checkout resilience without hiding persistent problems."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-004",
+      "question": "Which ticket introduced retry logic?",
+      "filters": {
+        "source_types": [
+          "ticket"
+        ],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "ticket-ticket-retry-logic-chunk-2",
+        "title": "Ticket TKT-204: Add Retry Logic for Payment Gateway",
+        "source_path": "data\\tickets\\ticket-retry-logic.md",
+        "source_type": "ticket",
+        "module": "payments",
+        "score": 0.626,
+        "ticket_id": "TKT-204",
+        "change_id": null,
+        "updated_at": "2026-03-11",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "ticket-ticket-retry-logic-chunk-2",
+          "title": "Ticket TKT-204: Add Retry Logic for Payment Gateway",
+          "source_path": "data\\tickets\\ticket-retry-logic.md",
+          "source_type": "ticket",
+          "module": "payments",
+          "score": 0.626,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-11",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "ticket-ticket-retry-logic-chunk-1",
+          "title": "Ticket TKT-204: Add Retry Logic for Payment Gateway",
+          "source_path": "data\\tickets\\ticket-retry-logic.md",
+          "source_type": "ticket",
+          "module": "payments",
+          "score": 0.562,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-11",
+          "symbol": null,
+          "language": null
+        }
+      ],
+      "reference_points": [
+        "Ticket TKT-204 introduced the retry work for the payment gateway."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-005",
+      "question": "Which function performs the retry loop?",
+      "filters": {
+        "source_types": [
+          "code"
+        ],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": "python",
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "code-retry-helper-describe-retry-reason-chunk-1",
+        "title": "Code Symbol: describe_retry_reason",
+        "source_path": "data\\codebase\\retry_helper.py",
+        "source_type": "code",
+        "module": "payments",
+        "score": 0.473,
+        "ticket_id": "TKT-204",
+        "change_id": null,
+        "updated_at": "2026-03-12",
+        "symbol": "describe_retry_reason",
+        "language": "python"
+      },
+      "citations": [
+        {
+          "chunk_id": "code-retry-helper-describe-retry-reason-chunk-1",
+          "title": "Code Symbol: describe_retry_reason",
+          "source_path": "data\\codebase\\retry_helper.py",
+          "source_type": "code",
+          "module": "payments",
+          "score": 0.473,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": "describe_retry_reason",
+          "language": "python"
+        },
+        {
+          "chunk_id": "code-retry-helper-chunk-1",
+          "title": "Code Overview: retry_helper",
+          "source_path": "data\\codebase\\retry_helper.py",
+          "source_type": "code",
+          "module": "payments",
+          "score": 0.458,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": null,
+          "language": "python"
+        },
+        {
+          "chunk_id": "code-retry-helper-retry-payment-call-chunk-1",
+          "title": "Code Symbol: retry_payment_call",
+          "source_path": "data\\codebase\\retry_helper.py",
+          "source_type": "code",
+          "module": "payments",
+          "score": 0.448,
+          "ticket_id": "TKT-204",
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": "retry_payment_call",
+          "language": "python"
+        }
+      ],
+      "reference_points": [
+        "The retry loop is implemented by the retry_payment_call function.",
+        "It retries transient PaymentGatewayTimeout failures with a small backoff."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-006",
+      "question": "Which ticket introduced notification routing?",
+      "filters": {
+        "source_types": [
+          "ticket"
+        ],
+        "module": "notifications",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "ticket-ticket-notification-routing-chunk-1",
+        "title": "Ticket TKT-207: Route Receipts Through Shared Notification Module",
+        "source_path": "data\\tickets\\ticket-notification-routing.md",
+        "source_type": "ticket",
+        "module": "notifications",
+        "score": 0.524,
+        "ticket_id": "TKT-207",
+        "change_id": null,
+        "updated_at": "2026-03-13",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "ticket-ticket-notification-routing-chunk-1",
+          "title": "Ticket TKT-207: Route Receipts Through Shared Notification Module",
+          "source_path": "data\\tickets\\ticket-notification-routing.md",
+          "source_type": "ticket",
+          "module": "notifications",
+          "score": 0.524,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-13",
+          "symbol": null,
+          "language": null
+        },
+        {
+          "chunk_id": "ticket-ticket-notification-routing-chunk-2",
+          "title": "Ticket TKT-207: Route Receipts Through Shared Notification Module",
+          "source_path": "data\\tickets\\ticket-notification-routing.md",
+          "source_type": "ticket",
+          "module": "notifications",
+          "score": 0.463,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-13",
+          "symbol": null,
+          "language": null
+        }
+      ],
+      "reference_points": [
+        "Ticket TKT-207 introduced the shared notification routing design."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-007",
+      "question": "Which change note summarized the retry helper work?",
+      "filters": {
+        "source_types": [
+          "change"
+        ],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "change-change-retry-helper-chunk-1",
+        "title": "Change CHG-001: Introduce Payment Retry Helper",
+        "source_path": "data\\changes\\change-retry-helper.md",
+        "source_type": "change",
+        "module": "payments",
+        "score": 0.575,
+        "ticket_id": "TKT-204",
+        "change_id": "CHG-001",
+        "updated_at": "2026-03-12",
+        "symbol": null,
+        "language": null
+      },
+      "citations": [
+        {
+          "chunk_id": "change-change-retry-helper-chunk-1",
+          "title": "Change CHG-001: Introduce Payment Retry Helper",
+          "source_path": "data\\changes\\change-retry-helper.md",
+          "source_type": "change",
+          "module": "payments",
+          "score": 0.575,
+          "ticket_id": "TKT-204",
+          "change_id": "CHG-001",
+          "updated_at": "2026-03-12",
+          "symbol": null,
+          "language": null
+        }
+      ],
+      "reference_points": [
+        "Change note CHG-001 summarized the retry helper work for ticket TKT-204."
+      ],
+      "answer": null,
+      "review_template": null
+    }
+  ]
+}

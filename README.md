@@ -22,7 +22,7 @@ The project is intentionally small and local.
 
 ## Current State
 
-Phase 4 is now implemented.
+Phase 5 is now implemented.
 
 That means the chatbot can retrieve from:
 
@@ -47,6 +47,12 @@ Phase 4 also improves evidence presentation.
 - each evidence line shows similarity and important metadata
 - mixed-source answers are easier to inspect
 
+Phase 5 adds a small evaluation loop.
+
+- a labeled question set lives in `eval/questions.json`
+- a new `evaluate` command scores retrieval behavior
+- detailed JSON reports make regression review easier
+
 This is enough to ask more realistic internal questions such as:
 
 - Where is authentication handled?
@@ -68,8 +74,11 @@ RAG_Learning/
 │   ├── index/
 │   └── tickets/
 ├── docs/
+│   ├── evaluation-guide.md
 │   ├── phased-roadmap.md
 │   └── technical-walkthrough.md
+├── eval/
+│   └── questions.json
 ├── src/
 │   └── rag_learning/
 │       ├── chatbot.py
@@ -78,6 +87,7 @@ RAG_Learning/
 │       ├── code_loader.py
 │       ├── config.py
 │       ├── corpus.py
+│       ├── evaluation.py
 │       ├── filters.py
 │       ├── metadata.py
 │       ├── ollama_client.py
@@ -131,7 +141,7 @@ $env:OLLAMA_CHAT_MODEL = "gemma3:latest"
 $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 ```
 
-## Run Phase 4
+## Run Phase 5
 
 ### 1. Build the local index
 
@@ -202,9 +212,25 @@ Instead of one flat citation list, the CLI now groups evidence by source type an
 
 That makes it easier to see whether the answer relied on docs, tickets, change notes, code, or a mixture.
 
-## How Phase 4 Works
+### 5. Run the evaluation set
 
-The Phase 1, Phase 2, and Phase 3 pieces are still visible, but Phase 4 adds a cleaner search layer on top of them.
+```powershell
+python -m rag_learning.cli evaluate
+```
+
+This command loads `eval/questions.json`, runs each case against the current index, prints a retrieval summary, and writes a detailed report to `eval/last-report.json`.
+
+If you want model answers in the report too, run:
+
+```powershell
+python -m rag_learning.cli evaluate --with-answers
+```
+
+## How Phase 5 Works
+
+The earlier phases still handle ingestion, retrieval, filtering, and answer generation.
+
+Phase 5 adds a repeatable way to measure whether that pipeline is still behaving well.
 
 ### Step 1: Load multiple source folders
 
@@ -276,7 +302,22 @@ Each evidence line now shows:
 
 The CLI also groups those lines by source type so mixed-source retrieval is easier to inspect.
 
-## Why Phase 4 Matters
+### Step 7: Evaluate with a small labeled dataset
+
+The evaluation runner reads each case from `eval/questions.json` and checks whether retrieval returned the expected evidence.
+
+The current metrics are intentionally simple:
+
+- expected source type coverage
+- expected module hit
+- expected ticket or change hit
+- expected symbol hit for code questions
+- expected path hit
+- overall per-case hit
+
+This is enough to catch common regressions without burying the project in framework code.
+
+## Why Phase 5 Matters
 
 Plain docs answer “what” questions reasonably well.
 
@@ -285,6 +326,8 @@ Tickets and change notes help answer “why” and “which change introduced th
 Code retrieval answers “where is this implemented?” questions.
 
 Phase 4 makes those answers easier to trust because you can narrow retrieval and inspect the supporting evidence more quickly.
+
+Phase 5 makes it easier to measure whether those improvements are still working after future changes.
 
 ## Current Limitations
 
@@ -310,8 +353,11 @@ If you want to understand Phase 4 in a sensible order:
 7. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
 8. Read [src/rag_learning/citations.py](src/rag_learning/citations.py)
 9. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
-10. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
-11. Run `index`
-12. Run `ask` with and without filters such as `--source-type code --symbol retry`
+10. Read [src/rag_learning/evaluation.py](src/rag_learning/evaluation.py)
+11. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
+12. Read [docs/evaluation-guide.md](docs/evaluation-guide.md)
+13. Run `index`
+14. Run `evaluate`
+15. Run `ask` with and without filters such as `--source-type code --symbol retry`
 
 For a line-by-line explanation of the code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).

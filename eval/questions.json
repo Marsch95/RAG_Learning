@@ -1,0 +1,126 @@
+[
+  {
+    "case_id": "eval-001",
+    "question": "Where is authentication handled?",
+    "filters": {
+      "module": "authentication"
+    },
+    "expected_source_types": ["doc", "code"],
+    "expected_module": "authentication",
+    "expected_paths": [
+      "data/docs/authentication.md",
+      "data/codebase/auth_service.py"
+    ],
+    "reference_points": [
+      "Authentication is handled by the auth_service backend module.",
+      "The service validates credentials, creates a session token, and records a login audit entry."
+    ]
+  },
+  {
+    "case_id": "eval-002",
+    "question": "What does the notification module do?",
+    "filters": {
+      "module": "notifications"
+    },
+    "expected_source_types": ["doc"],
+    "expected_module": "notifications",
+    "expected_ticket_id": "TKT-207",
+    "expected_paths": [
+      "data/docs/notifications.md"
+    ],
+    "reference_points": [
+      "The notification module sends digital receipts and in-app alerts.",
+      "It keeps message creation separate from delivery details."
+    ]
+  },
+  {
+    "case_id": "eval-003",
+    "question": "Why was retry logic added?",
+    "filters": {
+      "module": "payments"
+    },
+    "expected_source_types": ["doc", "ticket"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_paths": [
+      "data/docs/retries.md",
+      "data/tickets/ticket-retry-logic.md"
+    ],
+    "reference_points": [
+      "Retry logic was added because the simulated payment gateway had intermittent failures.",
+      "The goal was to improve checkout resilience without hiding persistent problems."
+    ]
+  },
+  {
+    "case_id": "eval-004",
+    "question": "Which ticket introduced retry logic?",
+    "filters": {
+      "source_types": ["ticket"],
+      "module": "payments"
+    },
+    "expected_source_types": ["ticket"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_paths": [
+      "data/tickets/ticket-retry-logic.md"
+    ],
+    "reference_points": [
+      "Ticket TKT-204 introduced the retry work for the payment gateway."
+    ]
+  },
+  {
+    "case_id": "eval-005",
+    "question": "Which function performs the retry loop?",
+    "filters": {
+      "source_types": ["code"],
+      "module": "payments",
+      "language": "python"
+    },
+    "expected_source_types": ["code"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_symbol": "retry_payment_call",
+    "expected_paths": [
+      "data/codebase/retry_helper.py"
+    ],
+    "reference_points": [
+      "The retry loop is implemented by the retry_payment_call function.",
+      "It retries transient PaymentGatewayTimeout failures with a small backoff."
+    ]
+  },
+  {
+    "case_id": "eval-006",
+    "question": "Which ticket introduced notification routing?",
+    "filters": {
+      "source_types": ["ticket"],
+      "module": "notifications"
+    },
+    "expected_source_types": ["ticket"],
+    "expected_module": "notifications",
+    "expected_ticket_id": "TKT-207",
+    "expected_paths": [
+      "data/tickets/ticket-notification-routing.md"
+    ],
+    "reference_points": [
+      "Ticket TKT-207 introduced the shared notification routing design."
+    ]
+  },
+  {
+    "case_id": "eval-007",
+    "question": "Which change note summarized the retry helper work?",
+    "filters": {
+      "source_types": ["change"],
+      "module": "payments"
+    },
+    "expected_source_types": ["change"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_change_id": "CHG-001",
+    "expected_paths": [
+      "data/changes/change-retry-helper.md"
+    ],
+    "reference_points": [
+      "Change note CHG-001 summarized the retry helper work for ticket TKT-204."
+    ]
+  }
+]
