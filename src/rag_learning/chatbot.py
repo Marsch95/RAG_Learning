@@ -106,4 +106,8 @@ class RAGChatbot:
             details.append(f"change_id={chunk.change_id}")
         if chunk.updated_at:
             details.append(f"updated_at={chunk.updated_at}")
+        if chunk.symbol:
+            details.append(f"symbol={chunk.symbol}")
+        if chunk.language:
+            details.append(f"language={chunk.language}")
         return f"{chunk.chunk_id} ({', '.join(details)})"

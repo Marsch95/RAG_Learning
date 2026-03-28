@@ -106,7 +106,10 @@ Teach how RAG can answer questions across both docs and code.
 
 - `data/codebase/*.py`
 - `src/rag_learning/code_loader.py`
-- updates to chunking for code-aware splitting
+- updates to `src/rag_learning/corpus.py`
+- updates to `src/rag_learning/retrieval.py`
+- updates to `src/rag_learning/chatbot.py`
+- updates to `src/rag_learning/cli.py`
 
 ### Code
 
@@ -115,14 +118,17 @@ This phase adds:
 - synthetic Python modules
 - file and symbol metadata
 - code retrieval alongside doc retrieval
+- line-aware code chunking
 
 ### Explanation
 
 Engineering assistants are much more useful when retrieval spans architecture docs and implementation files.
 
+This phase is where “what do the docs say?” and “where is that actually implemented?” can start using the same assistant.
+
 ### Next Phase Preview
 
-Phase 4 will improve answer quality with filters and citation formatting.
+Phase 4 will improve answer quality with sharper filters and cleaner citation formatting.
 
 ## Phase 4: Add Metadata Filtering And Better Citations
 

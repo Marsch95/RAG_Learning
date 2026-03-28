@@ -11,6 +11,7 @@ It answers questions about:
 - retry logic for payment failures
 - fake tickets that explain why changes happened
 - fake change notes that link work back to tickets
+- synthetic source code that shows where behavior is implemented
 
 The project is intentionally small and local.
 
@@ -21,13 +22,14 @@ The project is intentionally small and local.
 
 ## Current State
 
-Phase 2 is now implemented.
+Phase 3 is now implemented.
 
 That means the chatbot can retrieve from:
 
 - engineering docs in `data/docs`
 - fake tickets in `data/tickets`
 - fake change notes in `data/changes`
+- synthetic Python files in `data/codebase`
 
 It also supports simple metadata-aware retrieval with filters for:
 
@@ -42,6 +44,8 @@ This is enough to ask more realistic internal questions such as:
 - Why was retry logic added?
 - Which ticket introduced retry logic?
 - What do the docs say about the payment retry change?
+- Which function performs the retry loop?
+- Which code module sends receipts?
 
 ## Project Structure
 
@@ -49,6 +53,7 @@ This is enough to ask more realistic internal questions such as:
 RAG_Learning/
 ├── data/
 │   ├── changes/
+│   ├── codebase/
 │   ├── docs/
 │   ├── index/
 │   └── tickets/
@@ -59,6 +64,7 @@ RAG_Learning/
 │   └── rag_learning/
 │       ├── chatbot.py
 │       ├── cli.py
+│       ├── code_loader.py
 │       ├── config.py
 │       ├── corpus.py
 │       ├── metadata.py
@@ -113,7 +119,7 @@ $env:OLLAMA_CHAT_MODEL = "gemma3:latest"
 $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 ```
 
-## Run Phase 2
+## Run Phase 3
 
 ### 1. Build the local index
 
@@ -121,13 +127,14 @@ $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 python -m rag_learning.cli index
 ```
 
-This command now reads all three synthetic sources:
+This command now reads all four synthetic sources:
 
 - `data/docs`
 - `data/tickets`
 - `data/changes`
+- `data/codebase`
 
-It parses front matter metadata, chunks the text, creates embeddings, and writes the local JSON index to `data/index/index.json`.
+It parses markdown metadata, loads Python code files, creates code-aware chunks, creates embeddings, and writes the local JSON index to `data/index/index.json`.
 
 ### 2. Ask broad questions
 
@@ -135,6 +142,8 @@ It parses front matter metadata, chunks the text, creates embeddings, and writes
 python -m rag_learning.cli ask "Why was retry logic added?"
 python -m rag_learning.cli ask "Which ticket introduced retry logic?"
 python -m rag_learning.cli ask "What does the notification module do?"
+python -m rag_learning.cli ask "Where is authentication handled?"
+python -m rag_learning.cli ask "Which function performs the retry loop?" --source-type code
 ```
 
 ### 3. Ask filtered questions
@@ -143,6 +152,7 @@ Filter by source type:
 
 ```powershell
 python -m rag_learning.cli ask "Why was retry logic added?" --source-type ticket
+python -m rag_learning.cli ask "Which code module sends receipts?" --source-type code
 ```
 
 Filter by module:
@@ -163,15 +173,15 @@ You can combine filters:
 python -m rag_learning.cli ask "What do the docs say about this ticket?" --source-type doc --ticket-id TKT-204
 ```
 
-## How Phase 2 Works
+## How Phase 3 Works
 
-The Phase 1 loop is still visible, but the input corpus is richer.
+The Phase 1 and Phase 2 loops are still visible, but the input corpus is now rich enough to mix explanations and implementation details.
 
 ### Step 1: Load multiple source folders
 
-The loader reads markdown files from docs, tickets, and change notes.
+The loader reads markdown files from docs, tickets, and change notes, then loads Python files from the synthetic codebase.
 
-### Step 2: Parse front matter metadata
+### Step 2: Parse markdown metadata and code metadata
 
 Each file can define fields such as:
 
@@ -184,31 +194,53 @@ Each file can define fields such as:
 
 That metadata is carried into every chunk.
 
-### Step 3: Chunk and embed as before
+Code files also carry metadata such as:
 
-The chunking and embedding flow is still simple on purpose.
+- `source_type=code`
+- `module`
+- `symbol`
+- `language=python`
 
-That keeps Phase 2 focused on understanding metadata, not on changing the retrieval algorithm.
+### Step 3: Split code differently from markdown
 
-### Step 4: Filter before ranking
+Markdown files still use the simple text chunker.
+
+Code files use a line-aware splitter so indentation and function boundaries stay easier to read in retrieved snippets.
+
+The embedding step still stays simple on purpose.
+
+### Step 4: Include code overviews and symbol documents
+
+The code loader creates:
+
+- one overview document for each Python file
+- one symbol document for each top-level class or function
+
+That means retrieval can match both broad code questions and specific symbol questions.
+
+### Step 5: Filter before ranking
 
 If you pass CLI filters, the retriever narrows the candidate chunks before similarity ranking.
 
 This is the first step toward more precise internal search.
 
-### Step 5: Return richer citations
+### Step 6: Return richer citations
 
 Each citation now shows not only the file path, but also the important metadata attached to that chunk.
 
+For code chunks, citations can also show the retrieved symbol name and language.
+
 That makes it easier to inspect whether retrieval found the right kind of evidence.
 
-## Why Phase 2 Matters
+## Why Phase 3 Matters
 
 Plain docs answer “what” questions reasonably well.
 
 Tickets and change notes help answer “why” and “which change introduced this” questions.
 
-That makes the learning project feel more like a real internal engineering assistant without making the code much more complex.
+Code retrieval answers “where is this implemented?” questions.
+
+That makes the learning project feel much closer to a real internal engineering assistant without introducing a real production codebase.
 
 ## Current Limitations
 
@@ -216,7 +248,6 @@ The project is still intentionally small.
 
 - The index is still a JSON file.
 - Retrieval still uses simple cosine similarity.
-- There is no code retrieval yet.
 - There is no evaluation loop yet.
 - There is no database retrieval yet.
 
@@ -224,16 +255,17 @@ Those limitations are addressed in [docs/phased-roadmap.md](docs/phased-roadmap.
 
 ## Beginner Study Order
 
-If you want to understand Phase 2 in a sensible order:
+If you want to understand Phase 3 in a sensible order:
 
 1. Read [docs/phased-roadmap.md](docs/phased-roadmap.md)
 2. Read [docs/technical-walkthrough.md](docs/technical-walkthrough.md)
-3. Read [src/rag_learning/metadata.py](src/rag_learning/metadata.py)
-4. Read [src/rag_learning/corpus.py](src/rag_learning/corpus.py)
-5. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
-6. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
-7. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
-8. Run `index`
-9. Run `ask` with and without filters
+3. Read [src/rag_learning/code_loader.py](src/rag_learning/code_loader.py)
+4. Read [src/rag_learning/metadata.py](src/rag_learning/metadata.py)
+5. Read [src/rag_learning/corpus.py](src/rag_learning/corpus.py)
+6. Read [src/rag_learning/retrieval.py](src/rag_learning/retrieval.py)
+7. Read [src/rag_learning/chatbot.py](src/rag_learning/chatbot.py)
+8. Read [src/rag_learning/cli.py](src/rag_learning/cli.py)
+9. Run `index`
+10. Run `ask` with and without `--source-type code`
 
 For a line-by-line explanation of the code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).

@@ -22,6 +22,8 @@ class IndexedChunk:
     ticket_id: str | None = None
     change_id: str | None = None
     updated_at: str | None = None
+    symbol: str | None = None
+    language: str | None = None
 
     @classmethod
     def from_chunk(cls, chunk: Chunk, embedding: list[float]) -> "IndexedChunk":

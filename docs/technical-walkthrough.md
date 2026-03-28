@@ -1,6 +1,6 @@
 # Technical Walkthrough
 
-This document explains what the project is doing, starting with the Phase 1 baseline and then showing what Phase 2 adds.
+This document explains what the project is doing, starting with the Phase 1 baseline and then showing what later phases add.
 
 The goal is not only to tell you what commands to run, but to make the code easier to read and reason about.
 
@@ -977,5 +977,141 @@ It does not yet include:
 - re-ranking
 - formal evaluation
 - database retrieval
+
+Those are later phases.
+
+## Phase 3 Additions
+
+Phase 3 adds a small synthetic Python codebase and makes it searchable alongside docs, tickets, and change notes.
+
+That means the assistant can now answer two different kinds of questions from one index:
+
+- conceptual questions from docs and tickets
+- implementation questions from code
+
+## New Source Folder: `data/codebase`
+
+The codebase folder contains small Python modules that simulate an internal checkout backend.
+
+Examples:
+
+- `auth_service.py`
+- `notifications.py`
+- `retry_helper.py`
+- `payment_gateway.py`
+
+These files are intentionally tiny.
+
+They are there to teach retrieval over code, not to act as a full application.
+
+## New File: `code_loader.py`
+
+[src/rag_learning/code_loader.py](../src/rag_learning/code_loader.py) is the main Phase 3 addition.
+
+Its job is to:
+
+- read Python files from `data/codebase`
+- parse them with Python's `ast` module
+- create one overview document per file
+- create one symbol document per top-level function or class
+- attach metadata such as module, symbol, ticket ID, and language
+
+Why that matters:
+
+- overview documents help with broad questions like “what does this module do?”
+- symbol documents help with focused questions like “which function performs the retry loop?”
+
+## Why Use `ast`
+
+The code loader uses Python's built-in abstract syntax tree parser instead of regex.
+
+That is the right tradeoff here because it stays beginner-readable while still correctly identifying top-level classes and functions.
+
+## Phase 3 Ingestion Flow
+
+### Step 1: markdown and code are loaded differently
+
+`load_project_documents()` in [src/rag_learning/corpus.py](../src/rag_learning/corpus.py) now combines:
+
+- markdown documents from docs, tickets, and changes
+- code documents from the code loader
+
+This is a useful architectural step.
+
+The project now has multiple source-specific ingestion paths that all end in the same `Document` shape.
+
+### Step 2: code documents include symbol metadata
+
+Code documents can carry fields such as:
+
+- `source_type=code`
+- `module`
+- `symbol`
+- `ticket_id`
+- `language=python`
+
+That gives the retriever more context and gives the user clearer citations.
+
+### Step 3: code uses a different splitter
+
+Phase 3 adds `split_code_text()` in [src/rag_learning/corpus.py](../src/rag_learning/corpus.py).
+
+Why not reuse plain text chunking?
+
+Because code readability depends on line structure and indentation much more than prose does.
+
+The code splitter keeps lines together and uses line-based overlap so retrieved code is easier to inspect.
+
+### Step 4: chunk IDs can include symbol names
+
+If a code document represents a specific symbol, the chunk ID now includes that symbol name.
+
+That makes citations like this possible:
+
+```text
+code-retry-helper-retry-payment-call-chunk-1
+```
+
+That is more informative than a file-only identifier.
+
+## Phase 3 Retrieval Flow
+
+The retrieval algorithm is still cosine similarity over embeddings.
+
+What changed is the evidence pool.
+
+Now the top matches can come from:
+
+- docs
+- tickets
+- change notes
+- code overviews
+- code symbols
+
+That lets one question surface both an explanation and an implementation location.
+
+## Example Questions That Phase 3 Unlocks
+
+Try questions like:
+
+1. `Where is authentication handled?`
+2. `Which function performs the retry loop?`
+3. `Which code module sends receipts?`
+4. `What code is linked to ticket TKT-204?`
+5. `What do the docs and code say about notifications?`
+
+You can also narrow to only code evidence with `--source-type code`.
+
+## What Phase 3 Still Does Not Solve
+
+Phase 3 gives you multi-source retrieval, but it is still deliberately small.
+
+It does not yet include:
+
+- better citation grouping
+- richer query-time filtering
+- evaluation
+- database retrieval
+- live connectors to external tools
 
 Those are later phases.

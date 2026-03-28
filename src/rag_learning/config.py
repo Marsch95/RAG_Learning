@@ -10,6 +10,7 @@ DATA_DIR = PROJECT_ROOT / "data"
 DOCS_DIR = DATA_DIR / "docs"
 TICKETS_DIR = DATA_DIR / "tickets"
 CHANGES_DIR = DATA_DIR / "changes"
+CODEBASE_DIR = DATA_DIR / "codebase"
 INDEX_DIR = DATA_DIR / "index"
 INDEX_FILE = INDEX_DIR / "index.json"
 

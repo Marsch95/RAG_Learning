@@ -4,7 +4,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
 
-from .config import CHANGES_DIR, DOCS_DIR, PROJECT_ROOT, TICKETS_DIR
+from .code_loader import load_code_documents
+from .config import CHANGES_DIR, CODEBASE_DIR, DOCS_DIR, PROJECT_ROOT, TICKETS_DIR
 from .metadata import build_document_metadata, parse_markdown_with_front_matter
 
 
@@ -18,6 +19,8 @@ class Document:
     ticket_id: str | None = None
     change_id: str | None = None
     updated_at: str | None = None
+    symbol: str | None = None
+    language: str | None = None
 
 
 @dataclass(slots=True)
@@ -31,6 +34,8 @@ class Chunk:
     ticket_id: str | None = None
     change_id: str | None = None
     updated_at: str | None = None
+    symbol: str | None = None
+    language: str | None = None
 
     def to_dict(self) -> dict[str, str | None]:
         return asdict(self)
@@ -49,6 +54,23 @@ def load_project_documents() -> list[Document]:
             documents.extend(
                 load_markdown_documents(directory, default_source_type=source_type)
             )
+
+    if CODEBASE_DIR.exists():
+        code_documents = load_code_documents(CODEBASE_DIR, PROJECT_ROOT)
+        documents.extend(
+            Document(
+                text=document.text,
+                source_path=document.source_path,
+                title=document.title,
+                source_type=document.source_type,
+                module=document.module,
+                ticket_id=document.ticket_id,
+                updated_at=document.updated_at,
+                symbol=document.symbol,
+                language=document.language,
+            )
+            for document in code_documents
+        )
 
     return documents
 
@@ -81,6 +103,8 @@ def load_markdown_documents(
                 ticket_id=metadata.ticket_id,
                 change_id=metadata.change_id,
                 updated_at=metadata.updated_at,
+                symbol=metadata.symbol,
+                language=metadata.language,
             )
         )
     return documents
@@ -102,10 +126,11 @@ def chunk_documents(
 ) -> list[Chunk]:
     chunks: list[Chunk] = []
     for document in documents:
-        for index, chunk_text in enumerate(split_text(document.text, chunk_size, chunk_overlap)):
+        splitter = split_code_text if document.source_type == "code" else split_text
+        for index, chunk_text in enumerate(splitter(document.text, chunk_size, chunk_overlap)):
             chunks.append(
                 Chunk(
-                    chunk_id=f"{document.source_type}-{Path(document.source_path).stem}-chunk-{index + 1}",
+                    chunk_id=build_chunk_id(document, index + 1),
                     text=chunk_text,
                     source_path=document.source_path,
                     title=document.title,
@@ -114,9 +139,27 @@ def chunk_documents(
                     ticket_id=document.ticket_id,
                     change_id=document.change_id,
                     updated_at=document.updated_at,
+                    symbol=document.symbol,
+                    language=document.language,
                 )
             )
     return chunks
+
+
+def build_chunk_id(document: Document, chunk_number: int) -> str:
+    base_parts = [document.source_type, Path(document.source_path).stem]
+    if document.symbol:
+        base_parts.append(document.symbol)
+    normalized_parts = [normalize_identifier(part) for part in base_parts]
+    return f"{'-'.join(normalized_parts)}-chunk-{chunk_number}"
+
+
+def normalize_identifier(value: str) -> str:
+    normalized_characters = [character.lower() if character.isalnum() else "-" for character in value]
+    normalized = "".join(normalized_characters)
+    while "--" in normalized:
+        normalized = normalized.replace("--", "-")
+    return normalized.strip("-")
 
 
 def split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
@@ -146,3 +189,44 @@ def split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
         start = max(0, end - chunk_overlap)
 
     return chunks
+
+
+def split_code_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
+    lines = text.splitlines()
+    if not lines:
+        return []
+
+    if chunk_overlap >= chunk_size:
+        raise ValueError("chunk_overlap must be smaller than chunk_size")
+
+    chunks: list[str] = []
+    current_lines: list[str] = []
+    current_length = 0
+
+    for line in lines:
+        line_length = len(line) + 1
+        if current_lines and current_length + line_length > chunk_size:
+            chunks.append("\n".join(current_lines).strip())
+            overlap_lines = collect_overlap_lines(current_lines, chunk_overlap)
+            current_lines = overlap_lines.copy()
+            current_length = sum(len(existing_line) + 1 for existing_line in current_lines)
+
+        current_lines.append(line)
+        current_length += line_length
+
+    if current_lines:
+        chunks.append("\n".join(current_lines).strip())
+
+    return [chunk for chunk in chunks if chunk]
+
+
+def collect_overlap_lines(lines: list[str], chunk_overlap: int) -> list[str]:
+    overlap_lines: list[str] = []
+    overlap_length = 0
+    for line in reversed(lines):
+        line_length = len(line) + 1
+        if overlap_lines and overlap_length + line_length > chunk_overlap:
+            break
+        overlap_lines.insert(0, line)
+        overlap_length += line_length
+    return overlap_lines

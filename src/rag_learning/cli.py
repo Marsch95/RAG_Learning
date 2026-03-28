@@ -16,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     ask_parser.add_argument("question", help="Question to ask the chatbot")
     ask_parser.add_argument(
         "--source-type",
-        choices=["doc", "ticket", "change"],
+        choices=["doc", "ticket", "change", "code"],
         help="Limit retrieval to one source type",
     )
     ask_parser.add_argument(
