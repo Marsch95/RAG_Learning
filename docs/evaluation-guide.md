@@ -45,6 +45,7 @@ Each entry contains:
 - optional `filters`
 - expected metadata such as source types, module, ticket ID, change ID, symbol, and paths
 - optional database-specific expectations such as database name, table name, query name, and service name
+- optional answer checks such as `answer_mode` and `expected_answer_contains` for live database cases
 - `reference_points` for manual answer review
 
 This project keeps the labels simple on purpose.
@@ -134,6 +135,10 @@ Did all relevant expectations for that case pass?
 
 This is the main high-level score for the current dataset.
 
+For live database cases, this includes both the retrieval expectations and the exact-value answer-content check.
+
+The live set now covers both count-style questions and row-list questions such as asking for the latest failed payment attempts.
+
 ## How To Read The JSON Report
 
 Each result contains:
@@ -141,6 +146,7 @@ Each result contains:
 - the original question
 - the active filters
 - retrieval metrics
+- answer metrics for live database cases
 - the top citation
 - all retrieved citations
 - reference points

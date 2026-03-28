@@ -42,6 +42,14 @@ CODE_FILE_METADATA: dict[str, dict[str, str]] = {
         "ticket_id": "TKT-204",
         "updated_at": "2026-03-12",
     },
+    "notification_repository": {
+        "module": "notifications",
+        "ticket_id": "TKT-207",
+        "updated_at": "2026-03-17",
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "service_name": "NotificationService",
+    },
 }
 
 
@@ -61,6 +69,9 @@ def load_code_documents(code_dir: Path, project_root: Path) -> list[CodeDocument
                 module=metadata["module"],
                 ticket_id=metadata.get("ticket_id"),
                 updated_at=metadata.get("updated_at"),
+                database_name=metadata.get("database_name"),
+                table_name=metadata.get("table_name"),
+                service_name=metadata.get("service_name"),
             )
         )
 
@@ -77,6 +88,9 @@ def load_code_documents(code_dir: Path, project_root: Path) -> list[CodeDocument
                     symbol=symbol_name,
                     ticket_id=metadata.get("ticket_id"),
                     updated_at=metadata.get("updated_at"),
+                    database_name=metadata.get("database_name"),
+                    table_name=metadata.get("table_name"),
+                    service_name=metadata.get("service_name"),
                 )
             )
 

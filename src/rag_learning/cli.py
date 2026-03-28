@@ -6,6 +6,7 @@ from pathlib import Path
 from .chatbot import RAGChatbot
 from .citations import group_citations
 from .config import EVAL_QUESTIONS_FILE, EVAL_REPORT_FILE
+from .db_runtime import ensure_local_database, reset_local_database
 from .evaluation import evaluate_questions, summary_lines
 from .filters import SearchFilters
 
@@ -15,6 +16,9 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("index", help="Build the local document index")
+
+    subparsers.add_parser("seed-db", help="Create the seeded local SQLite database if it does not exist")
+    subparsers.add_parser("reset-db", help="Recreate the seeded local SQLite database from the seed script")
 
     evaluate_parser = subparsers.add_parser("evaluate", help="Run the Phase 5 evaluation set")
     evaluate_parser.add_argument(
@@ -81,6 +85,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--updated-after",
         help="Only include chunks updated on or after an ISO date such as 2026-03-10",
     )
+
+    ask_live_parser = subparsers.add_parser(
+        "ask-live",
+        help="Answer a small set of exact-value questions using the seeded local SQLite database",
+    )
+    ask_live_parser.add_argument("question", help="Exact-value question to ask against the seeded local SQLite database")
     return parser
 
 
@@ -92,6 +102,16 @@ def main() -> None:
     if args.command == "index":
         chunk_count = chatbot.build_index()
         print(f"Indexed {chunk_count} chunks into the local JSON index.")
+        return
+
+    if args.command == "seed-db":
+        db_path = ensure_local_database()
+        print(f"Seeded local SQLite database is ready at {db_path}")
+        return
+
+    if args.command == "reset-db":
+        db_path = reset_local_database()
+        print(f"Seeded local SQLite database was recreated at {db_path}")
         return
 
     if args.command == "ask":
@@ -133,6 +153,23 @@ def main() -> None:
         for line in summary_lines(report):
             print(line)
         print(f"\nDetailed report written to {args.output}")
+        return
+
+    if args.command == "ask-live":
+        result = chatbot.ask_live_database(args.question)
+        print("Answer:\n")
+        print(result.answer)
+        print("\nExecuted SQL:\n")
+        print(result.executed_sql)
+        print("\nEvidence:")
+        for group in group_citations(result.citations):
+            print(f"\n{group.heading}:")
+            for citation in group.citations:
+                print(f"- {citation.display_line()}")
+        if result.rows is not None:
+            print("\nRows:")
+            for row in result.rows:
+                print(f"- {row}")
         return
 
     parser.error("Unknown command")

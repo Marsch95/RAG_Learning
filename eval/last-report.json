@@ -1,29 +1,32 @@
 {
-  "question_count": 11,
+  "question_count": 15,
   "include_answers": false,
   "summary": {
-    "question_count": 11,
-    "source_type_hit_count": 11,
+    "question_count": 15,
+    "source_type_hit_count": 15,
     "source_type_hit_rate": 1.0,
-    "module_hit_count": 11,
+    "module_hit_count": 15,
     "module_hit_rate": 1.0,
-    "ticket_hit_count": 11,
+    "ticket_hit_count": 15,
     "ticket_hit_rate": 1.0,
-    "change_hit_count": 11,
+    "change_hit_count": 15,
     "change_hit_rate": 1.0,
-    "symbol_hit_count": 11,
+    "symbol_hit_count": 15,
     "symbol_hit_rate": 1.0,
-    "database_hit_count": 11,
+    "database_hit_count": 15,
     "database_hit_rate": 1.0,
-    "table_hit_count": 11,
+    "table_hit_count": 15,
     "table_hit_rate": 1.0,
-    "query_hit_count": 11,
+    "query_hit_count": 15,
     "query_hit_rate": 1.0,
-    "service_hit_count": 11,
+    "service_hit_count": 15,
     "service_hit_rate": 1.0,
-    "path_hit_count": 11,
+    "path_hit_count": 15,
     "path_hit_rate": 1.0,
-    "overall_hit_count": 11,
+    "answer_contains_hit_count": 3,
+    "answer_contains_hit_rate": 1.0,
+    "answer_contains_hit_applicable_count": 3,
+    "overall_hit_count": 15,
     "overall_hit_rate": 1.0
   },
   "results": [
@@ -131,7 +134,8 @@
         "The service validates credentials, creates a session token, and records a login audit entry."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-002",
@@ -237,7 +241,8 @@
         "It keeps message creation separate from delivery details."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-003",
@@ -343,7 +348,8 @@
         "The goal was to improve checkout resilience without hiding persistent problems."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-004",
@@ -433,7 +439,8 @@
         "Ticket TKT-204 introduced the retry work for the payment gateway."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-005",
@@ -541,7 +548,8 @@
         "It retries transient PaymentGatewayTimeout failures with a small backoff."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-006",
@@ -631,7 +639,8 @@
         "Ticket TKT-207 introduced the shared notification routing design."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-007",
@@ -704,7 +713,8 @@
         "Change note CHG-001 summarized the retry helper work for ticket TKT-204."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-008",
@@ -795,7 +805,8 @@
         "NotificationService writes those records."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-009",
@@ -869,7 +880,8 @@
         "It is used for reporting on failures after retry logic has finished."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-010",
@@ -978,7 +990,8 @@
         "The notification_deliveries schema stores receipt and store alert delivery attempts with status values such as queued, sent, and failed."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
     },
     {
       "case_id": "eval-011",
@@ -1088,7 +1101,421 @@
         "The find_failed_payment_attempts query reads those rows for reporting after retry logic finishes."
       ],
       "answer": null,
-      "review_template": null
+      "review_template": null,
+      "answer_metrics": null
+    },
+    {
+      "case_id": "eval-012",
+      "question": "How many failed payment attempts are there?",
+      "filters": {
+        "source_types": [],
+        "module": null,
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-note-payment-retry-reporting-payment-attempts-chunk-1",
+        "title": "Payment Retry Reporting Notes",
+        "source_path": "data\\database\\notes\\payment-retry-reporting.md",
+        "source_type": "db_note",
+        "module": "payments",
+        "score": 0.853,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-17",
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "payment_attempts",
+        "query_name": "find_failed_payment_attempts",
+        "service_name": "PaymentReportingQuery"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-note-payment-retry-reporting-payment-attempts-chunk-1",
+          "title": "Payment Retry Reporting Notes",
+          "source_path": "data\\database\\notes\\payment-retry-reporting.md",
+          "source_type": "db_note",
+          "module": "payments",
+          "score": 0.853,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        },
+        {
+          "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+          "title": "Query find_failed_payment_attempts",
+          "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+          "source_type": "db_query",
+          "module": "payments",
+          "score": 0.767,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        }
+      ],
+      "reference_points": [
+        "There are 3 failed payment attempts in the seeded local SQLite database."
+      ],
+      "answer": "There are 3 failed payment attempts in the seeded local SQLite database.",
+      "review_template": {
+        "grounded_in_retrieved_evidence": "",
+        "matches_live_query_result": "",
+        "notes": ""
+      },
+      "answer_metrics": {
+        "answer_contains_hit": true
+      }
+    },
+    {
+      "case_id": "eval-013",
+      "question": "Which recipients had failed notifications?",
+      "filters": {
+        "source_types": [],
+        "module": null,
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-query-list-notification-delivery-failures-notification-deliveries-chunk-1",
+        "title": "Query list_notification_delivery_failures",
+        "source_path": "data\\database\\queries\\list_notification_delivery_failures.sql",
+        "source_type": "db_query",
+        "module": "notifications",
+        "score": 0.688,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-16",
+        "symbol": null,
+        "language": "sql",
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "query_name": "list_notification_delivery_failures",
+        "service_name": "NotificationDeliveryReport"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-query-list-notification-delivery-failures-notification-deliveries-chunk-1",
+          "title": "Query list_notification_delivery_failures",
+          "source_path": "data\\database\\queries\\list_notification_delivery_failures.sql",
+          "source_type": "db_query",
+          "module": "notifications",
+          "score": 0.688,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": "list_notification_delivery_failures",
+          "service_name": "NotificationDeliveryReport"
+        },
+        {
+          "chunk_id": "db-query-list-notification-delivery-failures-notification-deliveries-chunk-2",
+          "title": "Query list_notification_delivery_failures",
+          "source_path": "data\\database\\queries\\list_notification_delivery_failures.sql",
+          "source_type": "db_query",
+          "module": "notifications",
+          "score": 0.664,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": "list_notification_delivery_failures",
+          "service_name": "NotificationDeliveryReport"
+        },
+        {
+          "chunk_id": "db-note-notification-delivery-overview-notification-deliveries-chunk-1",
+          "title": "Notification Delivery Database Notes",
+          "source_path": "data\\database\\notes\\notification-delivery-overview.md",
+          "source_type": "db_note",
+          "module": "notifications",
+          "score": 0.652,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        }
+      ],
+      "reference_points": [
+        "The failed notification recipients are bob@example.com and carol@example.com in the seeded local SQLite database."
+      ],
+      "answer": "The failed notification recipients are bob@example.com via email (error=mailbox unavailable), carol@example.com via email (error=temporary smtp timeout).",
+      "review_template": {
+        "grounded_in_retrieved_evidence": "",
+        "matches_live_query_result": "",
+        "notes": ""
+      },
+      "answer_metrics": {
+        "answer_contains_hit": true
+      }
+    },
+    {
+      "case_id": "eval-014",
+      "question": "Show the latest 2 failed payment attempts.",
+      "filters": {
+        "source_types": [],
+        "module": null,
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-note-payment-retry-reporting-payment-attempts-chunk-1",
+        "title": "Payment Retry Reporting Notes",
+        "source_path": "data\\database\\notes\\payment-retry-reporting.md",
+        "source_type": "db_note",
+        "module": "payments",
+        "score": 0.788,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-17",
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "payment_attempts",
+        "query_name": "find_failed_payment_attempts",
+        "service_name": "PaymentReportingQuery"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-note-payment-retry-reporting-payment-attempts-chunk-1",
+          "title": "Payment Retry Reporting Notes",
+          "source_path": "data\\database\\notes\\payment-retry-reporting.md",
+          "source_type": "db_note",
+          "module": "payments",
+          "score": 0.788,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        },
+        {
+          "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+          "title": "Query find_failed_payment_attempts",
+          "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+          "source_type": "db_query",
+          "module": "payments",
+          "score": 0.722,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        }
+      ],
+      "reference_points": [
+        "The latest failed payment attempts are for orders 1005 and 1004 in the seeded local SQLite database."
+      ],
+      "answer": "The latest failed payment attempts are order 1005 at 2026-03-17T09:28:00 (retry_count=0, reason=card declined), order 1004 at 2026-03-17T09:22:00 (retry_count=2, reason=temporary network timeout).",
+      "review_template": {
+        "grounded_in_retrieved_evidence": "",
+        "matches_live_query_result": "",
+        "notes": ""
+      },
+      "answer_metrics": {
+        "answer_contains_hit": true
+      }
+    },
+    {
+      "case_id": "eval-015",
+      "question": "Which code module writes notification delivery records and which table stores them?",
+      "filters": {
+        "source_types": [
+          "code",
+          "db_note",
+          "db_schema"
+        ],
+        "module": "notifications",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": null,
+        "table_name": "notification_deliveries",
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-note-notification-delivery-overview-notification-deliveries-chunk-1",
+        "title": "Notification Delivery Database Notes",
+        "source_path": "data\\database\\notes\\notification-delivery-overview.md",
+        "source_type": "db_note",
+        "module": "notifications",
+        "score": 0.633,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-17",
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "query_name": null,
+        "service_name": "NotificationService"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-note-notification-delivery-overview-notification-deliveries-chunk-1",
+          "title": "Notification Delivery Database Notes",
+          "source_path": "data\\database\\notes\\notification-delivery-overview.md",
+          "source_type": "db_note",
+          "module": "notifications",
+          "score": 0.633,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        },
+        {
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-1",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
+          "module": "notifications",
+          "score": 0.604,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        },
+        {
+          "chunk_id": "code-notification-repository-notificationdeliveryrepository-chunk-1",
+          "title": "Code Symbol: NotificationDeliveryRepository",
+          "source_path": "data\\codebase\\notification_repository.py",
+          "source_type": "code",
+          "module": "notifications",
+          "score": 0.559,
+          "ticket_id": "TKT-207",
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": "NotificationDeliveryRepository",
+          "language": "python",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        }
+      ],
+      "reference_points": [
+        "The notification_repository code module records notification delivery rows.",
+        "The notification_deliveries table stores those records."
+      ],
+      "answer": null,
+      "review_template": null,
+      "answer_metrics": null
     }
   ]
 }

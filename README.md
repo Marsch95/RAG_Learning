@@ -162,6 +162,15 @@ $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 
 ## Run Phase 6
 
+### 0. Create or reset the seeded local SQLite database
+
+```powershell
+python -m rag_learning.cli seed-db
+python -m rag_learning.cli reset-db
+```
+
+These commands prepare the small local SQLite database used for exact-value demo questions.
+
 ### 1. Build the local index
 
 ```powershell
@@ -255,6 +264,24 @@ If you want model answers in the report too, run:
 python -m rag_learning.cli evaluate --with-answers
 ```
 
+### 5b. Ask exact-value live database questions
+
+```powershell
+python -m rag_learning.cli ask-live "How many failed payment attempts are there?"
+python -m rag_learning.cli ask-live "Which orders had failed payment attempts?"
+python -m rag_learning.cli ask-live "Show the latest 2 failed payment attempts."
+python -m rag_learning.cli ask-live "How many failed notifications are there?"
+python -m rag_learning.cli ask-live "Which recipients had failed notifications?"
+```
+
+This path first retrieves the relevant schema, notes, and query context, then runs a small safe read-only SQL query against the seeded SQLite database.
+
+You can still ask cross-source retrieval questions when you want relationships instead of exact values:
+
+```powershell
+python -m rag_learning.cli ask "Which code module writes notification delivery records and which table stores them?" --source-type code --source-type db_schema
+```
+
 ### 6. Read the professional roadmap
 
 Open [docs/system-roadmap.md](docs/system-roadmap.md).
@@ -275,6 +302,8 @@ Phase 5 adds a repeatable way to measure whether that pipeline is still behaving
 Phase 6 adds the final architecture document that turns the learning project into a practical roadmap.
 
 After that roadmap work, this repository also adds a first database retrieval step using local SQL files.
+
+The latest extension adds a tiny live SQLite path for exact-value questions and a synthetic repository module that connects application code to the notification delivery table.
 
 ### Step 1: Load multiple source folders
 
@@ -298,6 +327,7 @@ Code files also carry metadata such as:
 - `source_type=code`
 - `module`
 - `symbol`
+- optional database fields such as `database_name`, `table_name`, and `service_name`
 - `language=python`
 
 Database files carry metadata such as:

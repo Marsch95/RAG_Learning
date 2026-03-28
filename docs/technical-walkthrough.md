@@ -100,6 +100,7 @@ Its job is to coordinate other modules:
 - ranking
 - prompt construction
 - answer formatting
+- optional live database execution for a tiny allowlisted set of exact-value questions
 
 If you want to understand the system as a whole, this is the most important file to read first.
 
@@ -177,6 +178,33 @@ Its job is to:
 - build retrieval documents for schema and query sources
 
 This keeps database retrieval aligned with the same beginner-friendly ingestion approach used for the other source types.
+
+### [src/rag_learning/db_runtime.py](../src/rag_learning/db_runtime.py)
+
+This file was added when the project moved from database knowledge retrieval to a tiny live-data demo.
+
+Its job is to:
+
+- create a seeded local SQLite database from a SQL script
+- allow only a very small set of read-only `SELECT` queries
+- map a few exact-value natural-language questions to safe query plans
+- support both aggregate questions and small row-list questions such as the latest failed payment attempts
+
+This is intentionally narrow.
+
+It demonstrates how retrieval and execution can work together without pretending to be a full production query planner.
+
+### [data/codebase/notification_repository.py](../data/codebase/notification_repository.py)
+
+This file was added after the first live database step.
+
+Its job is to:
+
+- simulate the application code that writes notification delivery records
+- connect a Python module to the `notification_deliveries` table through metadata
+- make cross-source questions possible, such as asking which code module writes to a specific table
+
+This is useful because professional assistants often need to connect code ownership and persistence details, not just explain them separately.
 
 ### [docs/system-roadmap.md](../docs/system-roadmap.md)
 

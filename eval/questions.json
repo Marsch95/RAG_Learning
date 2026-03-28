@@ -212,5 +212,91 @@
       "The payment_attempts table stores failed payment attempts.",
       "The find_failed_payment_attempts query reads those rows for reporting after retry logic finishes."
     ]
+  },
+  {
+    "case_id": "eval-012",
+    "question": "How many failed payment attempts are there?",
+    "answer_mode": "live_db",
+    "expected_source_types": ["db_note", "db_query"],
+    "expected_module": "payments",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "payment_attempts",
+    "expected_query_name": "find_failed_payment_attempts",
+    "expected_paths": [
+      "data/database/notes/payment-retry-reporting.md",
+      "data/database/schema/payment_attempts.sql",
+      "data/database/queries/find_failed_payment_attempts.sql"
+    ],
+    "expected_answer_contains": [
+      "3",
+      "failed payment attempts"
+    ],
+    "reference_points": [
+      "There are 3 failed payment attempts in the seeded local SQLite database."
+    ]
+  },
+  {
+    "case_id": "eval-013",
+    "question": "Which recipients had failed notifications?",
+    "answer_mode": "live_db",
+    "expected_source_types": ["db_note", "db_query"],
+    "expected_module": "notifications",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "notification_deliveries",
+    "expected_paths": [
+      "data/database/notes/notification-delivery-overview.md",
+      "data/database/queries/list_notification_delivery_failures.sql"
+    ],
+    "expected_answer_contains": [
+      "bob@example.com",
+      "carol@example.com"
+    ],
+    "reference_points": [
+      "The failed notification recipients are bob@example.com and carol@example.com in the seeded local SQLite database."
+    ]
+  },
+  {
+    "case_id": "eval-014",
+    "question": "Show the latest 2 failed payment attempts.",
+    "answer_mode": "live_db",
+    "expected_source_types": ["db_note", "db_query"],
+    "expected_module": "payments",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "payment_attempts",
+    "expected_query_name": "find_failed_payment_attempts",
+    "expected_paths": [
+      "data/database/notes/payment-retry-reporting.md",
+      "data/database/queries/find_failed_payment_attempts.sql"
+    ],
+    "expected_answer_contains": [
+      "order 1005",
+      "order 1004"
+    ],
+    "reference_points": [
+      "The latest failed payment attempts are for orders 1005 and 1004 in the seeded local SQLite database."
+    ]
+  },
+  {
+    "case_id": "eval-015",
+    "question": "Which code module writes notification delivery records and which table stores them?",
+    "filters": {
+      "source_types": ["code", "db_note", "db_schema"],
+      "module": "notifications",
+      "table_name": "notification_deliveries"
+    },
+    "expected_source_types": ["code", "db_note", "db_schema"],
+    "expected_module": "notifications",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "notification_deliveries",
+    "expected_service_name": "NotificationService",
+    "expected_paths": [
+      "data/codebase/notification_repository.py",
+      "data/database/notes/notification-delivery-overview.md",
+      "data/database/schema/notification_deliveries.sql"
+    ],
+    "reference_points": [
+      "The notification_repository code module records notification delivery rows.",
+      "The notification_deliveries table stores those records."
+    ]
   }
 ]

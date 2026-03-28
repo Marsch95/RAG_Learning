@@ -14,6 +14,7 @@ from .filters import SearchFilters, clean_text, normalize_source_types, normaliz
 class EvaluationCase:
     case_id: str
     question: str
+    answer_mode: str = "retrieval"
     filters: SearchFilters = field(default_factory=SearchFilters)
     expected_source_types: tuple[str, ...] = field(default_factory=tuple)
     expected_module: str | None = None
@@ -26,6 +27,7 @@ class EvaluationCase:
     expected_service_name: str | None = None
     expected_paths: tuple[str, ...] = field(default_factory=tuple)
     reference_points: tuple[str, ...] = field(default_factory=tuple)
+    expected_answer_contains: tuple[str, ...] = field(default_factory=tuple)
 
     @classmethod
     def from_dict(cls, payload: dict) -> "EvaluationCase":
@@ -33,6 +35,7 @@ class EvaluationCase:
         return cls(
             case_id=payload["case_id"],
             question=payload["question"],
+            answer_mode=payload.get("answer_mode", "retrieval"),
             filters=SearchFilters.from_cli(
                 source_types=filter_payload.get("source_types")
                 or source_type_to_list(filter_payload.get("source_type")),
@@ -58,6 +61,7 @@ class EvaluationCase:
             expected_service_name=clean_text(payload.get("expected_service_name")),
             expected_paths=tuple(payload.get("expected_paths", [])),
             reference_points=tuple(payload.get("reference_points", [])),
+            expected_answer_contains=tuple(payload.get("expected_answer_contains", [])),
         )
 
 
@@ -72,6 +76,7 @@ class EvaluationCaseResult:
     reference_points: list[str]
     answer: str | None = None
     review_template: dict[str, object] | None = None
+    answer_metrics: dict[str, bool] | None = None
 
 
 @dataclass(slots=True)
@@ -108,12 +113,27 @@ def evaluate_questions(
     results: list[EvaluationCaseResult] = []
 
     for case in cases:
-        citations = chatbot.retrieve(case.question, filters=case.filters)
-        retrieval_metrics = score_retrieval(case, citations)
-        answer = None
-        review_template = None
+        if case.answer_mode == "live_db":
+            live_result = chatbot.ask_live_database(case.question)
+            citations = live_result.citations
+            answer = live_result.answer
+        else:
+            citations = chatbot.retrieve(case.question, filters=case.filters)
+            answer = None
 
-        if include_answers:
+        retrieval_metrics = score_retrieval(case, citations)
+        review_template = None
+        answer_metrics = None
+
+        if case.answer_mode == "live_db":
+            answer_metrics = score_answer(case, answer or "")
+            retrieval_metrics["overall_hit"] = retrieval_metrics["overall_hit"] and answer_metrics["answer_contains_hit"]
+            review_template = {
+                "grounded_in_retrieved_evidence": "",
+                "matches_live_query_result": "",
+                "notes": "",
+            }
+        elif include_answers:
             answer = chatbot.ask(case.question, filters=case.filters).answer
             review_template = {
                 "grounded_in_retrieved_evidence": "",
@@ -133,6 +153,7 @@ def evaluate_questions(
                 reference_points=list(case.reference_points),
                 answer=answer,
                 review_template=review_template,
+                answer_metrics=answer_metrics,
             )
         )
 
@@ -168,14 +189,26 @@ def build_summary(results: list[EvaluationCaseResult]) -> dict[str, float | int]
         "query_hit",
         "service_hit",
         "path_hit",
+        "answer_contains_hit",
         "overall_hit",
     ]
 
     summary: dict[str, float | int] = {"question_count": question_count}
     for metric_name in metric_names:
-        hits = sum(1 for result in results if result.retrieval_metrics.get(metric_name, False))
+        applicable_count = question_count
+        if metric_name == "answer_contains_hit":
+            applicable_count = sum(1 for result in results if result.answer_metrics is not None)
+
+        hits = sum(
+            1
+            for result in results
+            if result.retrieval_metrics.get(metric_name, False)
+            or (result.answer_metrics and result.answer_metrics.get(metric_name, False))
+        )
         summary[f"{metric_name}_count"] = hits
-        summary[f"{metric_name}_rate"] = round(hits / question_count, 3)
+        summary[f"{metric_name}_rate"] = round(hits / applicable_count, 3) if applicable_count else 0.0
+        if metric_name == "answer_contains_hit":
+            summary["answer_contains_hit_applicable_count"] = applicable_count
     return summary
 
 
@@ -256,6 +289,12 @@ def score_retrieval(case: EvaluationCase, citations: list[Citation]) -> dict[str
     }
 
 
+def score_answer(case: EvaluationCase, answer: str) -> dict[str, bool]:
+    normalized_answer = answer.casefold()
+    answer_contains_hit = all(expected.casefold() in normalized_answer for expected in case.expected_answer_contains)
+    return {"answer_contains_hit": answer_contains_hit}
+
+
 def citation_to_dict(citation: Citation) -> dict[str, object]:
     return {
         "chunk_id": citation.chunk_id,
@@ -312,4 +351,5 @@ def summary_lines(report: EvaluationReport) -> list[str]:
         f"Module hit rate: {summary['module_hit_count']}/{summary['question_count']} ({summary['module_hit_rate']:.1%})",
         f"Table hit rate: {summary['table_hit_count']}/{summary['question_count']} ({summary['table_hit_rate']:.1%})",
         f"Path hit rate: {summary['path_hit_count']}/{summary['question_count']} ({summary['path_hit_rate']:.1%})",
+        f"Answer content hit rate: {summary['answer_contains_hit_count']}/{summary['answer_contains_hit_applicable_count']} ({summary['answer_contains_hit_rate']:.1%})",
     ]
