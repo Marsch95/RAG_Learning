@@ -38,7 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     ask_parser.add_argument(
         "--source-type",
         action="append",
-        choices=["doc", "ticket", "change", "code"],
+        choices=["doc", "ticket", "change", "code", "db_note", "db_schema", "db_query"],
         help="Limit retrieval to one or more source types. Repeat the flag to combine values.",
     )
     ask_parser.add_argument(
@@ -60,6 +60,22 @@ def build_parser() -> argparse.ArgumentParser:
     ask_parser.add_argument(
         "--language",
         help="Limit retrieval to one language such as python",
+    )
+    ask_parser.add_argument(
+        "--database-name",
+        help="Limit retrieval to one database such as acme_checkout",
+    )
+    ask_parser.add_argument(
+        "--table-name",
+        help="Limit retrieval to one database table such as notification_deliveries",
+    )
+    ask_parser.add_argument(
+        "--query-name",
+        help="Limit retrieval to one query such as find_failed_payment_attempts",
+    )
+    ask_parser.add_argument(
+        "--service-name",
+        help="Limit retrieval to one service such as NotificationService",
     )
     ask_parser.add_argument(
         "--updated-after",
@@ -86,6 +102,10 @@ def main() -> None:
             change_id=args.change_id,
             symbol=args.symbol,
             language=args.language,
+            database_name=args.database_name,
+            table_name=args.table_name,
+            query_name=args.query_name,
+            service_name=args.service_name,
             updated_after=args.updated_after,
         )
         result = chatbot.ask(args.question, filters=filters)

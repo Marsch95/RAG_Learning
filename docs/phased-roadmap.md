@@ -217,7 +217,9 @@ Define how this simple learning project would evolve into a stronger internal as
 
 ### Files Created
 
-- `docs/system-roadmap.md` or an expanded section in this roadmap
+- `docs/system-roadmap.md`
+- updates to `README.md`
+- updates to `docs/technical-walkthrough.md`
 
 ### Code
 
@@ -232,6 +234,7 @@ Likely additions:
 - source-specific ingestion pipelines
 - background refresh jobs
 - evaluation dashboards
+- database schema and query retrieval
 
 ### Explanation
 
@@ -249,4 +252,8 @@ This phase keeps the project grounded: learn the small version first, then grow 
 
 ### Next Phase Preview
 
-The next real implementation step after Phase 4 is Phase 5: add a small evaluation loop.
+There is no required next phase inside this repository.
+
+The next practical implementation step would be to add synthetic database sources based on the roadmap in `docs/system-roadmap.md`.
+
+That first follow-up step has now been implemented with local SQL schema and query files under `data/database`.

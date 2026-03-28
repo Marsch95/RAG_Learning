@@ -20,6 +20,10 @@ class EvaluationCase:
     expected_ticket_id: str | None = None
     expected_change_id: str | None = None
     expected_symbol: str | None = None
+    expected_database_name: str | None = None
+    expected_table_name: str | None = None
+    expected_query_name: str | None = None
+    expected_service_name: str | None = None
     expected_paths: tuple[str, ...] = field(default_factory=tuple)
     reference_points: tuple[str, ...] = field(default_factory=tuple)
 
@@ -37,6 +41,10 @@ class EvaluationCase:
                 change_id=filter_payload.get("change_id"),
                 symbol=filter_payload.get("symbol"),
                 language=filter_payload.get("language"),
+                database_name=filter_payload.get("database_name"),
+                table_name=filter_payload.get("table_name"),
+                query_name=filter_payload.get("query_name"),
+                service_name=filter_payload.get("service_name"),
                 updated_after=filter_payload.get("updated_after"),
             ),
             expected_source_types=normalize_source_types(payload.get("expected_source_types")),
@@ -44,6 +52,10 @@ class EvaluationCase:
             expected_ticket_id=normalize_ticket_id(payload.get("expected_ticket_id")),
             expected_change_id=clean_text(payload.get("expected_change_id")),
             expected_symbol=clean_text(payload.get("expected_symbol")),
+            expected_database_name=clean_text(payload.get("expected_database_name")),
+            expected_table_name=clean_text(payload.get("expected_table_name")),
+            expected_query_name=clean_text(payload.get("expected_query_name")),
+            expected_service_name=clean_text(payload.get("expected_service_name")),
             expected_paths=tuple(payload.get("expected_paths", [])),
             reference_points=tuple(payload.get("reference_points", [])),
         )
@@ -151,6 +163,10 @@ def build_summary(results: list[EvaluationCaseResult]) -> dict[str, float | int]
         "ticket_hit",
         "change_hit",
         "symbol_hit",
+        "database_hit",
+        "table_hit",
+        "query_hit",
+        "service_hit",
         "path_hit",
         "overall_hit",
     ]
@@ -174,6 +190,26 @@ def score_retrieval(case: EvaluationCase, citations: list[Citation]) -> dict[str
         for citation in citations
     ) if case.expected_module else True
 
+    database_hit = any(
+        normalize_text(citation.database_name) == normalize_text(case.expected_database_name)
+        for citation in citations
+    ) if case.expected_database_name else True
+
+    table_hit = any(
+        normalize_text(citation.table_name) == normalize_text(case.expected_table_name)
+        for citation in citations
+    ) if case.expected_table_name else True
+
+    query_hit = any(
+        normalize_text(citation.query_name) == normalize_text(case.expected_query_name)
+        for citation in citations
+    ) if case.expected_query_name else True
+
+    service_hit = any(
+        normalize_text(citation.service_name) == normalize_text(case.expected_service_name)
+        for citation in citations
+    ) if case.expected_service_name else True
+
     ticket_hit = any(
         normalize_ticket_id(citation.ticket_id) == normalize_ticket_id(case.expected_ticket_id)
         for citation in citations
@@ -193,13 +229,28 @@ def score_retrieval(case: EvaluationCase, citations: list[Citation]) -> dict[str
     normalized_expected_paths = {normalize_path(path) for path in case.expected_paths}
     path_hit = any(normalize_path(citation.source_path) in normalized_expected_paths for citation in citations) if case.expected_paths else True
 
-    overall_checks = [source_type_hit, module_hit, ticket_hit, change_hit, symbol_hit, path_hit]
+    overall_checks = [
+        source_type_hit,
+        module_hit,
+        ticket_hit,
+        change_hit,
+        symbol_hit,
+        database_hit,
+        table_hit,
+        query_hit,
+        service_hit,
+        path_hit,
+    ]
     return {
         "source_type_hit": source_type_hit,
         "module_hit": module_hit,
         "ticket_hit": ticket_hit,
         "change_hit": change_hit,
         "symbol_hit": symbol_hit,
+        "database_hit": database_hit,
+        "table_hit": table_hit,
+        "query_hit": query_hit,
+        "service_hit": service_hit,
         "path_hit": path_hit,
         "overall_hit": all(overall_checks),
     }
@@ -218,6 +269,10 @@ def citation_to_dict(citation: Citation) -> dict[str, object]:
         "updated_at": citation.updated_at,
         "symbol": citation.symbol,
         "language": citation.language,
+        "database_name": citation.database_name,
+        "table_name": citation.table_name,
+        "query_name": citation.query_name,
+        "service_name": citation.service_name,
     }
 
 
@@ -229,6 +284,10 @@ def filters_to_dict(filters: SearchFilters) -> dict[str, object]:
         "change_id": filters.change_id,
         "symbol": filters.symbol,
         "language": filters.language,
+        "database_name": filters.database_name,
+        "table_name": filters.table_name,
+        "query_name": filters.query_name,
+        "service_name": filters.service_name,
         "updated_after": filters.updated_after,
     }
 
@@ -251,5 +310,6 @@ def summary_lines(report: EvaluationReport) -> list[str]:
         f"Overall retrieval hit rate: {summary['overall_hit_count']}/{summary['question_count']} ({summary['overall_hit_rate']:.1%})",
         f"Source type hit rate: {summary['source_type_hit_count']}/{summary['question_count']} ({summary['source_type_hit_rate']:.1%})",
         f"Module hit rate: {summary['module_hit_count']}/{summary['question_count']} ({summary['module_hit_rate']:.1%})",
+        f"Table hit rate: {summary['table_hit_count']}/{summary['question_count']} ({summary['table_hit_rate']:.1%})",
         f"Path hit rate: {summary['path_hit_count']}/{summary['question_count']} ({summary['path_hit_rate']:.1%})",
     ]

@@ -12,6 +12,10 @@ class SearchFilters:
     change_id: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
     updated_after: str | None = None
 
     def is_empty(self) -> bool:
@@ -23,6 +27,10 @@ class SearchFilters:
                 self.change_id,
                 self.symbol,
                 self.language,
+                self.database_name,
+                self.table_name,
+                self.query_name,
+                self.service_name,
                 self.updated_after,
             ]
         )
@@ -41,6 +49,14 @@ class SearchFilters:
             parts.append(f"symbol~={self.symbol}")
         if self.language:
             parts.append(f"language={self.language}")
+        if self.database_name:
+            parts.append(f"database_name={self.database_name}")
+        if self.table_name:
+            parts.append(f"table_name={self.table_name}")
+        if self.query_name:
+            parts.append(f"query_name={self.query_name}")
+        if self.service_name:
+            parts.append(f"service_name={self.service_name}")
         if self.updated_after:
             parts.append(f"updated_after={self.updated_after}")
         return ", ".join(parts) if parts else "none"
@@ -55,6 +71,10 @@ class SearchFilters:
         change_id: str | None = None,
         symbol: str | None = None,
         language: str | None = None,
+        database_name: str | None = None,
+        table_name: str | None = None,
+        query_name: str | None = None,
+        service_name: str | None = None,
         updated_after: str | None = None,
     ) -> "SearchFilters":
         return cls(
@@ -64,6 +84,10 @@ class SearchFilters:
             change_id=clean_text(change_id),
             symbol=clean_text(symbol),
             language=normalize_text(language),
+            database_name=clean_text(database_name),
+            table_name=clean_text(table_name),
+            query_name=clean_text(query_name),
+            service_name=clean_text(service_name),
             updated_after=clean_text(updated_after),
         )
 
@@ -92,6 +116,18 @@ def matches_filters(item: Any, filters: SearchFilters | None) -> bool:
             return False
 
     if filters.language and normalize_text(getattr(item, "language", None)) != normalize_text(filters.language):
+        return False
+
+    if filters.database_name and normalize_text(getattr(item, "database_name", None)) != normalize_text(filters.database_name):
+        return False
+
+    if filters.table_name and normalize_text(getattr(item, "table_name", None)) != normalize_text(filters.table_name):
+        return False
+
+    if filters.query_name and normalize_text(getattr(item, "query_name", None)) != normalize_text(filters.query_name):
+        return False
+
+    if filters.service_name and normalize_text(getattr(item, "service_name", None)) != normalize_text(filters.service_name):
         return False
 
     if filters.updated_after:

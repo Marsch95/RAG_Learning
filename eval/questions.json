@@ -122,5 +122,95 @@
     "reference_points": [
       "Change note CHG-001 summarized the retry helper work for ticket TKT-204."
     ]
+  },
+  {
+    "case_id": "eval-008",
+    "question": "Which table stores notification delivery history?",
+    "filters": {
+      "source_types": ["db_schema"],
+      "module": "notifications",
+      "database_name": "acme_checkout"
+    },
+    "expected_source_types": ["db_schema"],
+    "expected_module": "notifications",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "notification_deliveries",
+    "expected_service_name": "NotificationService",
+    "expected_paths": [
+      "data/database/schema/notification_deliveries.sql"
+    ],
+    "reference_points": [
+      "The notification_deliveries table stores receipt and store alert delivery attempts.",
+      "NotificationService writes those records."
+    ]
+  },
+  {
+    "case_id": "eval-009",
+    "question": "Which query finds failed payment attempts?",
+    "filters": {
+      "source_types": ["db_query"],
+      "module": "payments",
+      "database_name": "acme_checkout"
+    },
+    "expected_source_types": ["db_query"],
+    "expected_module": "payments",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "payment_attempts",
+    "expected_query_name": "find_failed_payment_attempts",
+    "expected_paths": [
+      "data/database/queries/find_failed_payment_attempts.sql"
+    ],
+    "reference_points": [
+      "The find_failed_payment_attempts query selects failed rows from payment_attempts.",
+      "It is used for reporting on failures after retry logic has finished."
+    ]
+  },
+  {
+    "case_id": "eval-010",
+    "question": "Which service writes notification delivery records and what does the schema say?",
+    "filters": {
+      "source_types": ["db_note", "db_schema"],
+      "module": "notifications",
+      "database_name": "acme_checkout",
+      "table_name": "notification_deliveries"
+    },
+    "expected_source_types": ["db_note", "db_schema"],
+    "expected_module": "notifications",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "notification_deliveries",
+    "expected_service_name": "NotificationService",
+    "expected_paths": [
+      "data/database/notes/notification-delivery-overview.md",
+      "data/database/schema/notification_deliveries.sql"
+    ],
+    "reference_points": [
+      "NotificationService writes notification delivery records.",
+      "The notification_deliveries schema stores receipt and store alert delivery attempts with status values such as queued, sent, and failed."
+    ]
+  },
+  {
+    "case_id": "eval-011",
+    "question": "What stores failed payment attempts and which query reads them?",
+    "filters": {
+      "source_types": ["db_note", "db_query", "db_schema"],
+      "module": "payments",
+      "database_name": "acme_checkout",
+      "table_name": "payment_attempts"
+    },
+    "expected_source_types": ["db_note", "db_query", "db_schema"],
+    "expected_module": "payments",
+    "expected_database_name": "acme_checkout",
+    "expected_table_name": "payment_attempts",
+    "expected_query_name": "find_failed_payment_attempts",
+    "expected_service_name": "PaymentReportingQuery",
+    "expected_paths": [
+      "data/database/notes/payment-retry-reporting.md",
+      "data/database/schema/payment_attempts.sql",
+      "data/database/queries/find_failed_payment_attempts.sql"
+    ],
+    "reference_points": [
+      "The payment_attempts table stores failed payment attempts.",
+      "The find_failed_payment_attempts query reads those rows for reporting after retry logic finishes."
+    ]
   }
 ]

@@ -12,6 +12,7 @@ It answers questions about:
 - fake tickets that explain why changes happened
 - fake change notes that link work back to tickets
 - synthetic source code that shows where behavior is implemented
+- synthetic SQL schema and query files that show where operational data would live
 
 The project is intentionally small and local.
 
@@ -22,7 +23,7 @@ The project is intentionally small and local.
 
 ## Current State
 
-Phase 5 is now implemented.
+Phase 6 is now implemented.
 
 That means the chatbot can retrieve from:
 
@@ -53,6 +54,19 @@ Phase 5 adds a small evaluation loop.
 - a new `evaluate` command scores retrieval behavior
 - detailed JSON reports make regression review easier
 
+Phase 6 adds the professional roadmap.
+
+- `docs/system-roadmap.md` explains how this small project could grow into a stronger multi-source engineering knowledge assistant
+- the roadmap now includes database retrieval as the next major source type
+- the repository ends with a design handoff instead of pretending the learning project is already production-ready
+
+That first database step is now implemented as a local extension.
+
+- markdown notes under `data/database/notes` are indexed as `db_note`
+- SQL schema files under `data/database/schema` are indexed as `db_schema`
+- SQL query files under `data/database/queries` are indexed as `db_query`
+- the chatbot can filter by database-specific metadata such as `database_name`, `table_name`, `query_name`, and `service_name`
+
 This is enough to ask more realistic internal questions such as:
 
 - Where is authentication handled?
@@ -62,6 +76,8 @@ This is enough to ask more realistic internal questions such as:
 - What do the docs say about the payment retry change?
 - Which function performs the retry loop?
 - Which code module sends receipts?
+- Which table stores notification delivery history?
+- Which query finds failed payment attempts?
 
 ## Project Structure
 
@@ -70,12 +86,14 @@ RAG_Learning/
 ├── data/
 │   ├── changes/
 │   ├── codebase/
+│   ├── database/
 │   ├── docs/
 │   ├── index/
 │   └── tickets/
 ├── docs/
 │   ├── evaluation-guide.md
 │   ├── phased-roadmap.md
+│   ├── system-roadmap.md
 │   └── technical-walkthrough.md
 ├── eval/
 │   └── questions.json
@@ -87,6 +105,7 @@ RAG_Learning/
 │       ├── code_loader.py
 │       ├── config.py
 │       ├── corpus.py
+│       ├── db_loader.py
 │       ├── evaluation.py
 │       ├── filters.py
 │       ├── metadata.py
@@ -141,7 +160,7 @@ $env:OLLAMA_CHAT_MODEL = "gemma3:latest"
 $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 ```
 
-## Run Phase 5
+## Run Phase 6
 
 ### 1. Build the local index
 
@@ -149,12 +168,15 @@ $env:OLLAMA_EMBED_MODEL = "embeddinggemma:latest"
 python -m rag_learning.cli index
 ```
 
-This command now reads all four synthetic sources:
+This command now reads all seven synthetic source folders:
 
 - `data/docs`
 - `data/tickets`
 - `data/changes`
 - `data/codebase`
+- `data/database/notes`
+- `data/database/schema`
+- `data/database/queries`
 
 It parses markdown metadata, loads Python code files, creates code-aware chunks, creates embeddings, and writes the local JSON index to `data/index/index.json`.
 
@@ -166,6 +188,9 @@ python -m rag_learning.cli ask "Which ticket introduced retry logic?"
 python -m rag_learning.cli ask "What does the notification module do?"
 python -m rag_learning.cli ask "Where is authentication handled?"
 python -m rag_learning.cli ask "Which function performs the retry loop?" --source-type code
+python -m rag_learning.cli ask "Which service writes notification delivery records?" --source-type db_note
+python -m rag_learning.cli ask "Which table stores notification delivery history?" --source-type db_schema
+python -m rag_learning.cli ask "Which query finds failed payment attempts?" --source-type db_query
 ```
 
 ### 3. Ask more precise filtered questions
@@ -202,6 +227,10 @@ python -m rag_learning.cli ask "What do the docs say about this ticket?" --sourc
 python -m rag_learning.cli ask "Which retry helper symbol is relevant here?" --source-type code --module payments --symbol retry
 python -m rag_learning.cli ask "What changed after the retry ticket landed?" --updated-after 2026-03-10
 python -m rag_learning.cli ask "Show me Python evidence for notification routing" --source-type code --language python --module notifications
+python -m rag_learning.cli ask "Which service writes notification delivery records?" --source-type db_note --service-name NotificationService
+python -m rag_learning.cli ask "Which database table stores notification failures?" --source-type db_schema --table-name notification_deliveries
+python -m rag_learning.cli ask "Which SQL query finds failed payment attempts?" --source-type db_query --database-name acme_checkout --table-name payment_attempts
+python -m rag_learning.cli ask "What stores failed payment attempts and which query reads them?" --source-type db_note --source-type db_schema --source-type db_query --table-name payment_attempts
 ```
 
 ### 4. Inspect grouped evidence
@@ -226,11 +255,26 @@ If you want model answers in the report too, run:
 python -m rag_learning.cli evaluate --with-answers
 ```
 
-## How Phase 5 Works
+### 6. Read the professional roadmap
+
+Open [docs/system-roadmap.md](docs/system-roadmap.md).
+
+That document explains how to evolve this project into a stronger internal engineering assistant with:
+
+- multi-source ingestion pipelines
+- hybrid retrieval and re-ranking
+- stronger evaluation workflows
+- database retrieval using synthetic schema and query files
+
+## How Phase 6 Works
 
 The earlier phases still handle ingestion, retrieval, filtering, and answer generation.
 
 Phase 5 adds a repeatable way to measure whether that pipeline is still behaving well.
+
+Phase 6 adds the final architecture document that turns the learning project into a practical roadmap.
+
+After that roadmap work, this repository also adds a first database retrieval step using local SQL files.
 
 ### Step 1: Load multiple source folders
 
@@ -256,6 +300,15 @@ Code files also carry metadata such as:
 - `symbol`
 - `language=python`
 
+Database files carry metadata such as:
+
+- `source_type=db_schema` or `source_type=db_query`
+- `database_name`
+- `table_name`
+- `query_name`
+- `service_name`
+- `language=sql`
+
 ### Step 3: Split code differently from markdown
 
 Markdown files still use the simple text chunker.
@@ -273,6 +326,16 @@ The code loader creates:
 
 That means retrieval can match both broad code questions and specific symbol questions.
 
+### Step 4b: Load SQL schema and query documents
+
+The database loader reads SQL files with metadata comments at the top.
+
+It turns them into retrieval documents that include:
+
+- a short plain-English summary built from the metadata
+- the raw SQL body
+- structured database metadata for filtering and citations
+
 ### Step 5: Filter before ranking
 
 If you pass CLI filters, the retriever narrows the candidate chunks before similarity ranking.
@@ -287,6 +350,10 @@ You can now narrow retrieval with:
 - one change ID
 - symbol text for code searches
 - language such as `python`
+- database name
+- table name
+- query name
+- service name
 - an `updated_after` date
 
 This makes the assistant less noisy as the local corpus grows.
@@ -300,6 +367,13 @@ Each evidence line now shows:
 - the similarity score
 - important metadata such as module, ticket ID, change ID, symbol, and language
 
+For database sources, citations can also show:
+
+- database name
+- table name
+- query name
+- service name
+
 The CLI also groups those lines by source type so mixed-source retrieval is easier to inspect.
 
 ### Step 7: Evaluate with a small labeled dataset
@@ -312,12 +386,26 @@ The current metrics are intentionally simple:
 - expected module hit
 - expected ticket or change hit
 - expected symbol hit for code questions
+- expected database, table, query, and service hits for SQL questions
 - expected path hit
 - overall per-case hit
 
 This is enough to catch common regressions without burying the project in framework code.
 
-## Why Phase 5 Matters
+### Step 8: Map the learning project to a stronger system design
+
+The roadmap in [docs/system-roadmap.md](docs/system-roadmap.md) explains how to grow the project without breaking its teaching value.
+
+It covers:
+
+- source-specific ingestion pipelines
+- a more consistent metadata model
+- hybrid retrieval and re-ranking
+- audit-friendly citations
+- database retrieval using synthetic schema and query artifacts
+- stronger evaluation and regression review
+
+## Why Phase 6 Matters
 
 Plain docs answer “what” questions reasonably well.
 
@@ -329,20 +417,24 @@ Phase 4 makes those answers easier to trust because you can narrow retrieval and
 
 Phase 5 makes it easier to measure whether those improvements are still working after future changes.
 
+Phase 6 matters because it shows how to keep growing the project deliberately instead of jumping from a small demo straight into an overcomplicated system.
+
 ## Current Limitations
 
 The project is still intentionally small.
 
 - The index is still a JSON file.
 - Retrieval still uses simple cosine similarity.
-- There is no evaluation loop yet.
-- There is no database retrieval yet.
+- Evaluation is still lightweight and mostly retrieval-focused.
+- Database retrieval is still synthetic and file-based rather than connected to a live database.
 
 Those limitations are addressed in [docs/phased-roadmap.md](docs/phased-roadmap.md).
 
+The design direction for solving them is described in [docs/system-roadmap.md](docs/system-roadmap.md).
+
 ## Beginner Study Order
 
-If you want to understand Phase 4 in a sensible order:
+If you want to understand the full Phase 1 to Phase 6 journey in a sensible order:
 
 1. Read [docs/phased-roadmap.md](docs/phased-roadmap.md)
 2. Read [docs/technical-walkthrough.md](docs/technical-walkthrough.md)
@@ -359,5 +451,7 @@ If you want to understand Phase 4 in a sensible order:
 13. Run `index`
 14. Run `evaluate`
 15. Run `ask` with and without filters such as `--source-type code --symbol retry`
+16. Read [docs/system-roadmap.md](docs/system-roadmap.md)
+17. Read [src/rag_learning/db_loader.py](src/rag_learning/db_loader.py)
 
 For a line-by-line explanation of the code, see [docs/technical-walkthrough.md](docs/technical-walkthrough.md).

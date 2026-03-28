@@ -12,6 +12,10 @@ class DocumentMetadata:
     updated_at: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
 
 def parse_markdown_with_front_matter(text: str) -> tuple[dict[str, str], str]:
@@ -50,6 +54,12 @@ def build_document_metadata(
         ticket_id=empty_to_none(front_matter.get("ticket_id")),
         change_id=empty_to_none(front_matter.get("change_id")),
         updated_at=empty_to_none(front_matter.get("updated_at")),
+        symbol=empty_to_none(front_matter.get("symbol")),
+        language=empty_to_none(front_matter.get("language")),
+        database_name=empty_to_none(front_matter.get("database_name")),
+        table_name=empty_to_none(front_matter.get("table_name")),
+        query_name=empty_to_none(front_matter.get("query_name")),
+        service_name=empty_to_none(front_matter.get("service_name")),
     )
 
 

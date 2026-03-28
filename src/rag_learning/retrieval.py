@@ -24,6 +24,10 @@ class IndexedChunk:
     updated_at: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
     @classmethod
     def from_chunk(cls, chunk: Chunk, embedding: list[float]) -> "IndexedChunk":

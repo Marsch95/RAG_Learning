@@ -17,6 +17,10 @@ class Citation:
     updated_at: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
     def metadata_parts(self) -> list[str]:
         parts = [f"module={self.module}"]
@@ -28,6 +32,14 @@ class Citation:
             parts.append(f"change_id={self.change_id}")
         if self.language:
             parts.append(f"language={self.language}")
+        if self.database_name:
+            parts.append(f"database_name={self.database_name}")
+        if self.table_name:
+            parts.append(f"table_name={self.table_name}")
+        if self.query_name:
+            parts.append(f"query_name={self.query_name}")
+        if self.service_name:
+            parts.append(f"service_name={self.service_name}")
         if self.updated_at:
             parts.append(f"updated_at={self.updated_at}")
         return parts
@@ -71,6 +83,10 @@ def build_citations(ranked: list[tuple[float, object]]) -> list[Citation]:
                 updated_at=chunk.updated_at,
                 symbol=chunk.symbol,
                 language=chunk.language,
+                database_name=chunk.database_name,
+                table_name=chunk.table_name,
+                query_name=chunk.query_name,
+                service_name=chunk.service_name,
             )
         )
     return citations
@@ -91,10 +107,13 @@ def source_type_heading(source_type: str) -> str:
         "ticket": "Tickets",
         "change": "Change Notes",
         "code": "Code",
+        "db_note": "Database Notes",
+        "db_schema": "Database Schema",
+        "db_query": "Database Queries",
     }
     return headings.get(source_type, source_type.title())
 
 
 def source_type_sort_key(source_type: str) -> tuple[int, str]:
-    order = {"doc": 0, "ticket": 1, "change": 2, "code": 3}
+    order = {"doc": 0, "ticket": 1, "change": 2, "code": 3, "db_note": 4, "db_schema": 5, "db_query": 6}
     return (order.get(source_type, 99), source_type)

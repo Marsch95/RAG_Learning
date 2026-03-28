@@ -44,6 +44,7 @@ Each entry contains:
 - a `question`
 - optional `filters`
 - expected metadata such as source types, module, ticket ID, change ID, symbol, and paths
+- optional database-specific expectations such as database name, table name, query name, and service name
 - `reference_points` for manual answer review
 
 This project keeps the labels simple on purpose.
@@ -118,6 +119,14 @@ This is a simple but concrete check.
 Did retrieval surface the expected metadata anchor?
 
 These checks are especially useful for questions about change history and code locations.
+
+### `database_hit`, `table_hit`, `query_hit`, `service_hit`
+
+These checks are used for SQL-backed retrieval cases.
+
+They help verify that the assistant found the correct schema or query artifact, not just something generally related to payments or notifications.
+
+They also help with cross-source database questions where retrieval should surface a mix of notes, schema, and query evidence.
 
 ### `overall_hit`
 

@@ -16,6 +16,10 @@ class CodeDocument:
     updated_at: str | None = None
     language: str = "python"
     source_type: str = "code"
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
 
 CODE_FILE_METADATA: dict[str, dict[str, str]] = {

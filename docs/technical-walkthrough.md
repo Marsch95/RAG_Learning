@@ -166,6 +166,30 @@ Its job is to:
 
 This is intentionally lightweight.
 
+### [src/rag_learning/db_loader.py](../src/rag_learning/db_loader.py)
+
+This file was added when the project took the first database step after Phase 6.
+
+Its job is to:
+
+- read local SQL files from the synthetic database folders
+- parse metadata from SQL comment headers
+- build retrieval documents for schema and query sources
+
+This keeps database retrieval aligned with the same beginner-friendly ingestion approach used for the other source types.
+
+### [docs/system-roadmap.md](../docs/system-roadmap.md)
+
+This document was added in Phase 6.
+
+It is not source code.
+
+Its job is to:
+
+- translate the small learning project into a stronger future architecture
+- explain which new source types should come next
+- keep future implementation work grounded in the lessons from the earlier phases
+
 ### [src/rag_learning/ollama_client.py](../src/rag_learning/ollama_client.py)
 
 This file talks to Ollama over HTTP.
@@ -195,6 +219,8 @@ Before looking at the functions, it helps to know the three main data shapes use
 Phase 4 adds two more small data shapes that are worth knowing.
 
 Phase 5 adds two more.
+
+The database extension adds four more metadata fields that matter for SQL sources.
 
 ### `Document`
 
@@ -252,6 +278,10 @@ Fields include:
 - `change_id`
 - `symbol`
 - `language`
+- `database_name`
+- `table_name`
+- `query_name`
+- `service_name`
 - `updated_after`
 
 Purpose:
@@ -266,6 +296,7 @@ Fields include:
 
 - chunk identity such as `chunk_id` and `source_path`
 - metadata such as `module`, `ticket_id`, `change_id`, and `symbol`
+- database metadata such as `database_name`, `table_name`, `query_name`, and `service_name`
 - retrieval score
 
 Purpose:
@@ -390,6 +421,115 @@ That supports a practical workflow:
 
 1. check retrieval automatically
 2. inspect answer quality manually only when needed
+
+## What Phase 6 Adds
+
+Phase 6 is intentionally different from the earlier implementation phases.
+
+It does not try to hide the fact that the repository is still small.
+
+Instead, it turns that small project into a roadmap.
+
+### Why this phase is documentation-heavy
+
+By the end of Phase 5, the repository already teaches:
+
+- document retrieval
+- ticket retrieval
+- change-note retrieval
+- code retrieval
+- metadata filtering
+- citations
+- evaluation
+
+What it does not implement yet is database retrieval or production-style retrieval architecture.
+
+Phase 6 solves that by documenting the next design steps clearly.
+
+### What the roadmap contributes
+
+The roadmap in [docs/system-roadmap.md](../docs/system-roadmap.md) explains:
+
+- which additional source types to add
+- how to unify metadata across sources
+- how to evolve from vector-only retrieval to hybrid retrieval
+- why re-ranking should come after good filtering, not before
+- how to add database retrieval without introducing a real live database too early
+
+This matters because many RAG projects fail by expanding too fast without preserving clarity.
+
+## What The Database Extension Adds
+
+After the Phase 6 roadmap was written, this repository added the first concrete database retrieval step.
+
+That step is still intentionally local.
+
+It does not connect to a real database.
+
+Instead, it indexes SQL files as knowledge sources.
+
+### Why this design fits the project
+
+The project already teaches retrieval over:
+
+- docs
+- tickets
+- change notes
+- code
+
+SQL files fit naturally into the same pattern.
+
+They are just another form of engineering knowledge.
+
+### The two SQL source types
+
+The project now supports:
+
+- `db_note` for plain-English database notes
+- `db_schema` for table definitions and schema context
+- `db_query` for query examples and reporting logic
+
+That split matters because users often ask two different kinds of database questions:
+
+1. where is this data stored?
+2. how is this data read or reported?
+
+### How SQL metadata is stored
+
+Each SQL file begins with simple metadata comment lines such as:
+
+```sql
+-- source_type: db_schema
+-- module: notifications
+-- database_name: acme_checkout
+-- table_name: notification_deliveries
+-- service_name: NotificationService
+```
+
+This matches the project style.
+
+It is easy to read, easy to edit, and avoids introducing a more complex parser too early.
+
+Database notes use the same markdown front matter style as the other note sources in the repo.
+
+That means the project can answer cross-source questions like:
+
+- which service writes these records?
+- what does the schema say about them?
+- which query reads them later?
+
+### The practical lesson of Phase 6
+
+Phase 6 is the step where the project stops being only a tutorial and becomes a reusable engineering blueprint.
+
+That blueprint is still intentionally conservative.
+
+It favors:
+
+- deliberate source modeling
+- auditable citations
+- repeatable evaluation
+- gradual system growth
 
 ## Execution Flow: `python -m rag_learning.cli index`
 

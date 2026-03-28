@@ -1,21 +1,29 @@
 {
-  "question_count": 7,
+  "question_count": 11,
   "include_answers": false,
   "summary": {
-    "question_count": 7,
-    "source_type_hit_count": 7,
+    "question_count": 11,
+    "source_type_hit_count": 11,
     "source_type_hit_rate": 1.0,
-    "module_hit_count": 7,
+    "module_hit_count": 11,
     "module_hit_rate": 1.0,
-    "ticket_hit_count": 7,
+    "ticket_hit_count": 11,
     "ticket_hit_rate": 1.0,
-    "change_hit_count": 7,
+    "change_hit_count": 11,
     "change_hit_rate": 1.0,
-    "symbol_hit_count": 7,
+    "symbol_hit_count": 11,
     "symbol_hit_rate": 1.0,
-    "path_hit_count": 7,
+    "database_hit_count": 11,
+    "database_hit_rate": 1.0,
+    "table_hit_count": 11,
+    "table_hit_rate": 1.0,
+    "query_hit_count": 11,
+    "query_hit_rate": 1.0,
+    "service_hit_count": 11,
+    "service_hit_rate": 1.0,
+    "path_hit_count": 11,
     "path_hit_rate": 1.0,
-    "overall_hit_count": 7,
+    "overall_hit_count": 11,
     "overall_hit_rate": 1.0
   },
   "results": [
@@ -29,6 +37,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -37,6 +49,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -51,7 +67,11 @@
         "change_id": null,
         "updated_at": "2026-03-05",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -65,7 +85,11 @@
           "change_id": null,
           "updated_at": "2026-03-05",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "doc-authentication-chunk-2",
@@ -78,7 +102,11 @@
           "change_id": null,
           "updated_at": "2026-03-05",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "code-auth-service-chunk-1",
@@ -91,7 +119,11 @@
           "change_id": null,
           "updated_at": "2026-03-05",
           "symbol": null,
-          "language": "python"
+          "language": "python",
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
@@ -111,6 +143,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -119,6 +155,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -133,7 +173,11 @@
         "change_id": null,
         "updated_at": "2026-03-14",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -147,7 +191,11 @@
           "change_id": null,
           "updated_at": "2026-03-14",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "code-notifications-chunk-1",
@@ -160,20 +208,28 @@
           "change_id": null,
           "updated_at": "2026-03-14",
           "symbol": null,
-          "language": "python"
+          "language": "python",
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
-          "chunk_id": "code-notifications-notificationservice-chunk-1",
-          "title": "Code Symbol: NotificationService",
-          "source_path": "data\\codebase\\notifications.py",
-          "source_type": "code",
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-2",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
           "module": "notifications",
-          "score": 0.464,
-          "ticket_id": "TKT-207",
+          "score": 0.502,
+          "ticket_id": null,
           "change_id": null,
-          "updated_at": "2026-03-14",
-          "symbol": "NotificationService",
-          "language": "python"
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
         }
       ],
       "reference_points": [
@@ -193,6 +249,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -201,6 +261,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -215,7 +279,11 @@
         "change_id": null,
         "updated_at": "2026-03-12",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -229,7 +297,11 @@
           "change_id": null,
           "updated_at": "2026-03-12",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "doc-retries-chunk-2",
@@ -242,7 +314,11 @@
           "change_id": null,
           "updated_at": "2026-03-12",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "ticket-ticket-retry-logic-chunk-2",
@@ -255,7 +331,11 @@
           "change_id": null,
           "updated_at": "2026-03-11",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
@@ -277,6 +357,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -285,6 +369,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -299,7 +387,11 @@
         "change_id": null,
         "updated_at": "2026-03-11",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -313,7 +405,11 @@
           "change_id": null,
           "updated_at": "2026-03-11",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "ticket-ticket-retry-logic-chunk-1",
@@ -326,7 +422,11 @@
           "change_id": null,
           "updated_at": "2026-03-11",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
@@ -347,6 +447,10 @@
         "change_id": null,
         "symbol": null,
         "language": "python",
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -355,6 +459,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -369,7 +477,11 @@
         "change_id": null,
         "updated_at": "2026-03-12",
         "symbol": "describe_retry_reason",
-        "language": "python"
+        "language": "python",
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -383,7 +495,11 @@
           "change_id": null,
           "updated_at": "2026-03-12",
           "symbol": "describe_retry_reason",
-          "language": "python"
+          "language": "python",
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "code-retry-helper-chunk-1",
@@ -396,7 +512,11 @@
           "change_id": null,
           "updated_at": "2026-03-12",
           "symbol": null,
-          "language": "python"
+          "language": "python",
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "code-retry-helper-retry-payment-call-chunk-1",
@@ -409,7 +529,11 @@
           "change_id": null,
           "updated_at": "2026-03-12",
           "symbol": "retry_payment_call",
-          "language": "python"
+          "language": "python",
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
@@ -431,6 +555,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -439,6 +567,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -453,7 +585,11 @@
         "change_id": null,
         "updated_at": "2026-03-13",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -467,7 +603,11 @@
           "change_id": null,
           "updated_at": "2026-03-13",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         },
         {
           "chunk_id": "ticket-ticket-notification-routing-chunk-2",
@@ -480,7 +620,11 @@
           "change_id": null,
           "updated_at": "2026-03-13",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
@@ -501,6 +645,10 @@
         "change_id": null,
         "symbol": null,
         "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
         "updated_after": null
       },
       "retrieval_metrics": {
@@ -509,6 +657,10 @@
         "ticket_hit": true,
         "change_hit": true,
         "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
         "path_hit": true,
         "overall_hit": true
       },
@@ -523,7 +675,11 @@
         "change_id": "CHG-001",
         "updated_at": "2026-03-12",
         "symbol": null,
-        "language": null
+        "language": null,
+        "database_name": null,
+        "table_name": null,
+        "query_name": null,
+        "service_name": null
       },
       "citations": [
         {
@@ -537,11 +693,399 @@
           "change_id": "CHG-001",
           "updated_at": "2026-03-12",
           "symbol": null,
-          "language": null
+          "language": null,
+          "database_name": null,
+          "table_name": null,
+          "query_name": null,
+          "service_name": null
         }
       ],
       "reference_points": [
         "Change note CHG-001 summarized the retry helper work for ticket TKT-204."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-008",
+      "question": "Which table stores notification delivery history?",
+      "filters": {
+        "source_types": [
+          "db_schema"
+        ],
+        "module": "notifications",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-1",
+        "title": "Table notification_deliveries",
+        "source_path": "data\\database\\schema\\notification_deliveries.sql",
+        "source_type": "db_schema",
+        "module": "notifications",
+        "score": 0.641,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-15",
+        "symbol": null,
+        "language": "sql",
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "query_name": null,
+        "service_name": "NotificationService"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-1",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
+          "module": "notifications",
+          "score": 0.641,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        },
+        {
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-2",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
+          "module": "notifications",
+          "score": 0.571,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        }
+      ],
+      "reference_points": [
+        "The notification_deliveries table stores receipt and store alert delivery attempts.",
+        "NotificationService writes those records."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-009",
+      "question": "Which query finds failed payment attempts?",
+      "filters": {
+        "source_types": [
+          "db_query"
+        ],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": null,
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+        "title": "Query find_failed_payment_attempts",
+        "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+        "source_type": "db_query",
+        "module": "payments",
+        "score": 0.777,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-16",
+        "symbol": null,
+        "language": "sql",
+        "database_name": "acme_checkout",
+        "table_name": "payment_attempts",
+        "query_name": "find_failed_payment_attempts",
+        "service_name": "PaymentReportingQuery"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+          "title": "Query find_failed_payment_attempts",
+          "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+          "source_type": "db_query",
+          "module": "payments",
+          "score": 0.777,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        }
+      ],
+      "reference_points": [
+        "The find_failed_payment_attempts query selects failed rows from payment_attempts.",
+        "It is used for reporting on failures after retry logic has finished."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-010",
+      "question": "Which service writes notification delivery records and what does the schema say?",
+      "filters": {
+        "source_types": [
+          "db_note",
+          "db_schema"
+        ],
+        "module": "notifications",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-note-notification-delivery-overview-notification-deliveries-chunk-1",
+        "title": "Notification Delivery Database Notes",
+        "source_path": "data\\database\\notes\\notification-delivery-overview.md",
+        "source_type": "db_note",
+        "module": "notifications",
+        "score": 0.617,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-17",
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "notification_deliveries",
+        "query_name": null,
+        "service_name": "NotificationService"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-note-notification-delivery-overview-notification-deliveries-chunk-1",
+          "title": "Notification Delivery Database Notes",
+          "source_path": "data\\database\\notes\\notification-delivery-overview.md",
+          "source_type": "db_note",
+          "module": "notifications",
+          "score": 0.617,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        },
+        {
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-1",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
+          "module": "notifications",
+          "score": 0.601,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        },
+        {
+          "chunk_id": "db-schema-notification-deliveries-notification-deliveries-chunk-2",
+          "title": "Table notification_deliveries",
+          "source_path": "data\\database\\schema\\notification_deliveries.sql",
+          "source_type": "db_schema",
+          "module": "notifications",
+          "score": 0.558,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-15",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "notification_deliveries",
+          "query_name": null,
+          "service_name": "NotificationService"
+        }
+      ],
+      "reference_points": [
+        "NotificationService writes notification delivery records.",
+        "The notification_deliveries schema stores receipt and store alert delivery attempts with status values such as queued, sent, and failed."
+      ],
+      "answer": null,
+      "review_template": null
+    },
+    {
+      "case_id": "eval-011",
+      "question": "What stores failed payment attempts and which query reads them?",
+      "filters": {
+        "source_types": [
+          "db_note",
+          "db_query",
+          "db_schema"
+        ],
+        "module": "payments",
+        "ticket_id": null,
+        "change_id": null,
+        "symbol": null,
+        "language": null,
+        "database_name": "acme_checkout",
+        "table_name": "payment_attempts",
+        "query_name": null,
+        "service_name": null,
+        "updated_after": null
+      },
+      "retrieval_metrics": {
+        "source_type_hit": true,
+        "module_hit": true,
+        "ticket_hit": true,
+        "change_hit": true,
+        "symbol_hit": true,
+        "database_hit": true,
+        "table_hit": true,
+        "query_hit": true,
+        "service_hit": true,
+        "path_hit": true,
+        "overall_hit": true
+      },
+      "top_citation": {
+        "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+        "title": "Query find_failed_payment_attempts",
+        "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+        "source_type": "db_query",
+        "module": "payments",
+        "score": 0.703,
+        "ticket_id": null,
+        "change_id": null,
+        "updated_at": "2026-03-16",
+        "symbol": null,
+        "language": "sql",
+        "database_name": "acme_checkout",
+        "table_name": "payment_attempts",
+        "query_name": "find_failed_payment_attempts",
+        "service_name": "PaymentReportingQuery"
+      },
+      "citations": [
+        {
+          "chunk_id": "db-query-find-failed-payment-attempts-payment-attempts-chunk-1",
+          "title": "Query find_failed_payment_attempts",
+          "source_path": "data\\database\\queries\\find_failed_payment_attempts.sql",
+          "source_type": "db_query",
+          "module": "payments",
+          "score": 0.703,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-16",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        },
+        {
+          "chunk_id": "db-note-payment-retry-reporting-payment-attempts-chunk-1",
+          "title": "Payment Retry Reporting Notes",
+          "source_path": "data\\database\\notes\\payment-retry-reporting.md",
+          "source_type": "db_note",
+          "module": "payments",
+          "score": 0.61,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-17",
+          "symbol": null,
+          "language": null,
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": "find_failed_payment_attempts",
+          "service_name": "PaymentReportingQuery"
+        },
+        {
+          "chunk_id": "db-schema-payment-attempts-payment-attempts-chunk-1",
+          "title": "Table payment_attempts",
+          "source_path": "data\\database\\schema\\payment_attempts.sql",
+          "source_type": "db_schema",
+          "module": "payments",
+          "score": 0.609,
+          "ticket_id": null,
+          "change_id": null,
+          "updated_at": "2026-03-12",
+          "symbol": null,
+          "language": "sql",
+          "database_name": "acme_checkout",
+          "table_name": "payment_attempts",
+          "query_name": null,
+          "service_name": "PaymentGatewayClient"
+        }
+      ],
+      "reference_points": [
+        "The payment_attempts table stores failed payment attempts.",
+        "The find_failed_payment_attempts query reads those rows for reporting after retry logic finishes."
       ],
       "answer": null,
       "review_template": null

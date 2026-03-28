@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import Iterable
 
 from .code_loader import load_code_documents
-from .config import CHANGES_DIR, CODEBASE_DIR, DOCS_DIR, PROJECT_ROOT, TICKETS_DIR
+from .config import CHANGES_DIR, CODEBASE_DIR, DATABASE_DIR, DATABASE_NOTES_DIR, DOCS_DIR, PROJECT_ROOT, TICKETS_DIR
+from .db_loader import load_database_documents
 from .metadata import build_document_metadata, parse_markdown_with_front_matter
 
 
@@ -21,6 +22,10 @@ class Document:
     updated_at: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
 
 @dataclass(slots=True)
@@ -36,6 +41,10 @@ class Chunk:
     updated_at: str | None = None
     symbol: str | None = None
     language: str | None = None
+    database_name: str | None = None
+    table_name: str | None = None
+    query_name: str | None = None
+    service_name: str | None = None
 
     def to_dict(self) -> dict[str, str | None]:
         return asdict(self)
@@ -47,6 +56,7 @@ def load_project_documents() -> list[Document]:
         (DOCS_DIR, "doc"),
         (TICKETS_DIR, "ticket"),
         (CHANGES_DIR, "change"),
+        (DATABASE_NOTES_DIR, "db_note"),
     )
 
     for directory, source_type in sources:
@@ -68,8 +78,31 @@ def load_project_documents() -> list[Document]:
                 updated_at=document.updated_at,
                 symbol=document.symbol,
                 language=document.language,
+                database_name=document.database_name,
+                table_name=document.table_name,
+                query_name=document.query_name,
+                service_name=document.service_name,
             )
             for document in code_documents
+        )
+
+    if DATABASE_DIR.exists():
+        database_documents = load_database_documents(DATABASE_DIR, PROJECT_ROOT)
+        documents.extend(
+            Document(
+                text=document.text,
+                source_path=document.source_path,
+                title=document.title,
+                source_type=document.source_type,
+                module=document.module,
+                updated_at=document.updated_at,
+                language=document.language,
+                database_name=document.database_name,
+                table_name=document.table_name,
+                query_name=document.query_name,
+                service_name=document.service_name,
+            )
+            for document in database_documents
         )
 
     return documents
@@ -105,6 +138,10 @@ def load_markdown_documents(
                 updated_at=metadata.updated_at,
                 symbol=metadata.symbol,
                 language=metadata.language,
+                database_name=metadata.database_name,
+                table_name=metadata.table_name,
+                query_name=metadata.query_name,
+                service_name=metadata.service_name,
             )
         )
     return documents
@@ -126,7 +163,7 @@ def chunk_documents(
 ) -> list[Chunk]:
     chunks: list[Chunk] = []
     for document in documents:
-        splitter = split_code_text if document.source_type == "code" else split_text
+        splitter = split_code_text if document.language in {"python", "sql"} or document.source_type in {"code", "db_schema", "db_query"} else split_text
         for index, chunk_text in enumerate(splitter(document.text, chunk_size, chunk_overlap)):
             chunks.append(
                 Chunk(
@@ -141,6 +178,10 @@ def chunk_documents(
                     updated_at=document.updated_at,
                     symbol=document.symbol,
                     language=document.language,
+                    database_name=document.database_name,
+                    table_name=document.table_name,
+                    query_name=document.query_name,
+                    service_name=document.service_name,
                 )
             )
     return chunks
@@ -150,6 +191,10 @@ def build_chunk_id(document: Document, chunk_number: int) -> str:
     base_parts = [document.source_type, Path(document.source_path).stem]
     if document.symbol:
         base_parts.append(document.symbol)
+    elif document.table_name:
+        base_parts.append(document.table_name)
+    elif document.query_name:
+        base_parts.append(document.query_name)
     normalized_parts = [normalize_identifier(part) for part in base_parts]
     return f"{'-'.join(normalized_parts)}-chunk-{chunk_number}"
 
