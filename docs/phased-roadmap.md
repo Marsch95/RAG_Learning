@@ -257,3 +257,41 @@ There is no required next phase inside this repository.
 The next practical implementation step would be to add synthetic database sources based on the roadmap in `docs/system-roadmap.md`.
 
 That first follow-up step has now been implemented with local SQL schema and query files under `data/database`.
+
+## Phase 7: When Large Context Windows Help And When Retrieval Still Matters
+
+### Purpose
+
+Explain how modern long-context models change RAG design without making retrieval unnecessary.
+
+### Limitations Solved
+
+- The project now explains why retrieval is still useful even when models can accept much more text.
+- The roadmap becomes more realistic about when direct prompting is enough.
+- The project separates retrieval problems from live-tool problems.
+
+### Files Created
+
+- `docs/phase-7-context-vs-retrieval.md`
+- updates to `README.md`
+- updates to `docs/phased-roadmap.md`
+
+### Code
+
+This phase is documentation-oriented.
+
+It clarifies when to use:
+
+- direct prompting with a small corpus
+- retrieval over relevant evidence
+- live tools for current database or API state
+
+### Explanation
+
+Large context windows reduce the need for overly aggressive chunking and prompt compression.
+
+They do not remove the need for relevance filtering, freshness, citations, permissions, or live queries.
+
+### Next Phase Preview
+
+One natural future phase would be automatic routing between retrieval-only questions and tool-backed questions inside the main `ask` command.

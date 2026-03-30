@@ -6,6 +6,8 @@ It explains how the small local learning project could grow into a more professi
 
 The repository has now implemented the first step from this roadmap: synthetic SQL schema and query retrieval using local files under `data/database`.
 
+For a more operational, beginner-friendly explanation of what a real enterprise rollout would involve, see [docs/enterprise-setup-guide.md](enterprise-setup-guide.md).
+
 The goal is not to replace the beginner-friendly code in this repository.
 
 The goal is to show a realistic path forward.

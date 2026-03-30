@@ -14,6 +14,8 @@ dist/
 
 # Generated local index artifacts
 data/index/index.json
+eval/last-report.json
+data/database/runtime/*.sqlite
 
 # Common Python tool caches
 .pytest_cache/
