@@ -825,22 +825,29 @@ If you embed the documents with one model and the question with a different inco
 
 That is why both use the configured embedding model.
 
-### Step 4: chunks are ranked by cosine similarity
+### Step 4: chunks are ranked with hybrid retrieval
 
 Next line:
 
 ```python
-ranked = rank_chunks(query_embedding, indexed_chunks, top_k=self.settings.top_k)
+ranked = rank_chunks(
+    query_embedding,
+    indexed_chunks,
+    query_text=question,
+    top_k=self.settings.top_k,
+)
 ```
 
 Inside `rank_chunks()`:
 
 1. compare the query vector to each stored chunk vector
-2. compute a similarity score for each pair
-3. sort scores from highest to lowest
-4. keep only the top `k` results
+2. compute BM25 scores over chunk text plus key metadata such as ticket IDs, symbols, and table names
+3. normalize the vector and lexical scores onto a common scale
+4. combine them with a weighted hybrid score
+5. sort scores from highest to lowest
+6. keep only the top `k` results
 
-The similarity function is `cosine_similarity()`.
+The vector part still uses `cosine_similarity()`, but it is no longer the only signal.
 
 ### Step 5: how cosine similarity works here
 
@@ -1270,7 +1277,7 @@ The CLI turns those values into a `SearchFilters` object.
 
 ### Step 2: ranking only considers matching chunks
 
-In [src/rag_learning/retrieval.py](../src/rag_learning/retrieval.py), `rank_chunks()` now checks metadata filters before scoring similarity.
+In [src/rag_learning/retrieval.py](../src/rag_learning/retrieval.py), `rank_chunks()` now checks metadata filters before scoring the hybrid rank.
 
 That means the system can answer questions like:
 
@@ -1330,13 +1337,18 @@ Those experiments make the value of metadata much easier to see.
 
 Phase 2 is stronger than Phase 1, but it is still intentionally small.
 
-It does not yet include:
+At this point in the project, the later phases have added:
 
 - source code retrieval
 - hybrid keyword plus vector search
-- re-ranking
 - formal evaluation
 - database retrieval
+
+It still does not include:
+
+- a dedicated re-ranking stage
+- a production-grade index backend
+- permission-aware retrieval
 
 Those are later phases.
 

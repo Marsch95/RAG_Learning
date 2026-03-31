@@ -158,7 +158,7 @@ Additional architecture notes:
 This repository is intentionally simple, so several things are still deliberately lightweight.
 
 - the index is a local JSON file
-- retrieval is vector-only rather than hybrid lexical plus vector search
+- hybrid retrieval is intentionally simple and does not yet have a dedicated re-ranker
 - evaluation is small and mostly retrieval-focused
 - the live database path is tightly scoped to a few safe patterns
 - there is no web UI or API service layer

@@ -124,8 +124,11 @@ class RAGChatbot:
         return rank_chunks(
             query_embedding,
             indexed_chunks,
+            query_text=question,
             top_k=self.settings.top_k,
             filters=filters,
+            vector_weight=self.settings.vector_weight,
+            bm25_weight=self.settings.bm25_weight,
         )
 
     def _build_live_database_answer(self, result: LiveQueryResult) -> str:

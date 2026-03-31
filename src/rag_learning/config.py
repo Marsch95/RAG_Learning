@@ -31,6 +31,8 @@ class Settings:
     chunk_size: int = int(os.getenv("RAG_CHUNK_SIZE", "500"))
     chunk_overlap: int = int(os.getenv("RAG_CHUNK_OVERLAP", "80"))
     top_k: int = int(os.getenv("RAG_TOP_K", "3"))
+    vector_weight: float = float(os.getenv("RAG_VECTOR_WEIGHT", "0.7"))
+    bm25_weight: float = float(os.getenv("RAG_BM25_WEIGHT", "0.3"))
 
 
 def ensure_index_dir() -> None:

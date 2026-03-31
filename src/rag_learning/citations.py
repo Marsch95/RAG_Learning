@@ -47,12 +47,12 @@ class Citation:
     def prompt_label(self) -> str:
         return (
             f"{self.chunk_id} | {self.source_type} | {self.source_path} | "
-            f"similarity={self.score:.3f} | {', '.join(self.metadata_parts())}"
+            f"score={self.score:.3f} | {', '.join(self.metadata_parts())}"
         )
 
     def display_line(self) -> str:
         return (
-            f"{self.title} | {self.source_path} | similarity={self.score:.3f} | "
+            f"{self.title} | {self.source_path} | score={self.score:.3f} | "
             f"{', '.join(self.metadata_parts())}"
         )
 

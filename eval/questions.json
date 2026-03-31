@@ -298,5 +298,41 @@
       "The notification_repository code module records notification delivery rows.",
       "The notification_deliveries table stores those records."
     ]
+  },
+  {
+    "case_id": "eval-016",
+    "question": "What does TKT-204 cover?",
+    "filters": {
+      "source_types": ["ticket"],
+      "module": "payments"
+    },
+    "expected_source_types": ["ticket"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_paths": [
+      "data/tickets/ticket-retry-logic.md"
+    ],
+    "reference_points": [
+      "Ticket TKT-204 covers retry logic for intermittent payment gateway failures."
+    ]
+  },
+  {
+    "case_id": "eval-017",
+    "question": "Where is retry_payment_call defined?",
+    "filters": {
+      "source_types": ["code"],
+      "module": "payments",
+      "language": "python"
+    },
+    "expected_source_types": ["code"],
+    "expected_module": "payments",
+    "expected_ticket_id": "TKT-204",
+    "expected_symbol": "retry_payment_call",
+    "expected_paths": [
+      "data/codebase/retry_helper.py"
+    ],
+    "reference_points": [
+      "The retry_payment_call function is defined in retry_helper.py."
+    ]
   }
 ]

@@ -248,6 +248,8 @@ Examples:
 
 ### Step 3: Add hybrid retrieval
 
+This repository now includes a simple version of this step by combining BM25-style lexical scoring with vector similarity.
+
 Use both:
 
 - vector similarity
